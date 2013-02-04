@@ -13,7 +13,7 @@
 
   "optionalDependencies" :{},
 
-  "scripts": {"test": "make test-all"}
+  "scripts": {"test": "js/test/mocha"}
 
 }
   
