@@ -14,7 +14,7 @@
 
   "optionalDependencies" :{},
 
-  "scripts": {"test": "js/test/mocha"}
+  "scripts": {"test": "mocha js/test"}
 
 }
   
