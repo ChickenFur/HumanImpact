@@ -1,0 +1,19 @@
+{
+  "name" : "HumanImpact",
+  "description": "Klout for dead people",
+  "version":"0.0.1",
+  "engines": {
+    "node": "0.8"
+  },
+  "dependencies": {},
+
+  "devDependencies" : {
+    "mocha" : 
+  },
+
+  "optionalDependencies" :{},
+
+  "scripts": {"test": "make test-all"}
+
+}
+  
