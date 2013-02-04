@@ -5,10 +5,11 @@
   "engines": {
     "node": "0.8"
   },
-  "dependencies": {},
+  "dependencies": {
+    "mocha" : ""},
 
   "devDependencies" : {
-    "mocha" : 
+    "mocha" : ""
   },
 
   "optionalDependencies" :{},
