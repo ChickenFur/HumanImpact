@@ -6,10 +6,10 @@ makeScraper = () ->
 
     getDBPediaData : (pageTitle) ->
       options = 
-        # headers : 
-        #   Access-Control-Allow-Origin: *
-        #   Access-Control-Allow-Methods: GET, POST, PUT, DELETE
-        #   Access-Control-Allow-Headers: Authorization
+        headers : 
+          "Access-Control-Allow-Origin": "*"
+          "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE"
+          "Access-Control-Allow-Headers": "Authorization"
         url : "http://dbpedia.org/resource/#{pageTitle}"
         dataType : "jsonp"
         error : (error) ->
