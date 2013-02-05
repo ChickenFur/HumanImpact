@@ -19,14 +19,14 @@
       }
     };
     return request(options, function(err, res, body) {
-      var newPerson;
+      var data, newPerson;
       if (err) {
         console.log("Error:", err);
       }
-      console.log("Body", body);
-      if (isPerson(JSON.parse(body))) {
-        newPerson = models.makePerson(wikipage, new Date(), "http://en.wikipedia.org/" + wikipage);
-        return callBack(true, JSON.parse(body));
+      data = JSON.parse(body);
+      if (isPerson(data)) {
+        newPerson = models.makePerson(wikipage, data["http://dbpedia.org/resource/" + wikipage]["http://dbpedia.org/ontology/birthDate"][0].value, "http://en.wikipedia.org/" + wikipage);
+        return callBack(true, JSON.stringify(newPerson));
       } else {
         return callBack(false);
       }

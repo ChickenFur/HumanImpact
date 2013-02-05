@@ -12,7 +12,8 @@
           url: "/dbpedia/?wikipage=" + event.target.value,
           dataType: "json",
           success: function(data) {
-            return personTest = data;
+            personTest = data;
+            return $(".result").append("<p>Person Name: " + personTest.name + "<br>Date of Birth: " + personTest.dob + "<br>URL: " + personTest.url + "<br>Relations: " + personTest.realtions + "</p>");
           },
           error: function(err) {
             return console.log("Error:", err);
