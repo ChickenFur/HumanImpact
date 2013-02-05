@@ -1,4 +1,6 @@
 express = require 'express'
+dbPedia = require './server/dbPediaScraper'
+
 app = express()
 
 app.get '/dbpedia', (req, res) ->
