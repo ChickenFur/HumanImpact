@@ -4,7 +4,7 @@
 
   request = require('request');
 
-  exports.getJSON = function(wikipage) {
+  exports.getJSON = function(wikipage, callBack) {
     var options;
     options = {
       url: "http://dbpedia.org/resource/" + wikipage,
@@ -13,8 +13,11 @@
       }
     };
     return request(options, function(err, res, body) {
-      console.log(body);
-      return body;
+      if (err) {
+        console.log("Error:", err);
+      }
+      console.log("Body", body);
+      return callBack(body);
     });
   };
 
