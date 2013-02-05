@@ -15,7 +15,7 @@ exports.getJSON = (wikipage, callBack)->
     console.log "Body", body
     if isPerson( JSON.parse(body) )
       newPerson = models.makePerson(wikipage, new Date(), "http://en.wikipedia.org/#{wikipage}")
-      callBack(true, newPerson)
+      callBack(true, JSON.parse(body))
     else
       callBack(false)
     

@@ -1,7 +1,14 @@
+personTest = null
+
 $(document).ready () ->
   $('.nameInput').on "keyup", (event) ->
     if event.keyCode == 13
-      scraper = makeScraper()
-      scraper.getRelatedPeople(event.target.value)
-    
-
+      settings = 
+        url : "/dbpedia/?wikipage=#{event.target.value}" 
+        dataType : "json"
+        success : (data)->
+          personTest = data
+        error : (err)->
+          console.log "Error:", err
+      
+      $.ajax settings

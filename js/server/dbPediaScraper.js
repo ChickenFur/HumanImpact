@@ -26,7 +26,7 @@
       console.log("Body", body);
       if (isPerson(JSON.parse(body))) {
         newPerson = models.makePerson(wikipage, new Date(), "http://en.wikipedia.org/" + wikipage);
-        return callBack(true, newPerson);
+        return callBack(true, JSON.parse(body));
       } else {
         return callBack(false);
       }
