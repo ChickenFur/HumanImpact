@@ -1,8 +1,13 @@
-http = require 'http'
+request = require 'request'
 
-getJSON = (wikipage)->
-  url = "http://dbpedia.org/resource/#{wikipage}"
-  http.get url, (res){
-    console.log("got a response", res)
-  }
+exports.getJSON = (wikipage)->
+  options = 
+    url : "http://dbpedia.org/resource/#{wikipage}"
+    headers : "Content-type" : "application/json"
+  
+  request options, (err, res, body)->
+    console.log body
+    body
+
+
 
