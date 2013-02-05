@@ -9,7 +9,7 @@
   app = express();
 
   app.get('/dbpedia', function(req, res) {
-    return dbPedia.getJSON(req.query["wikipage"], function(body) {
+    return dbPedia.getJSON(req.query["wikipage"], function(isPerson, body) {
       return res.send(body);
     });
   });

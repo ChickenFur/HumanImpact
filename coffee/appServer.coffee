@@ -4,7 +4,7 @@ dbPedia = require './server/dbPediaScraper'
 app = express()
 
 app.get '/dbpedia', (req, res) ->
-  dbPedia.getJSON req.query["wikipage"], (body) ->
+  dbPedia.getJSON req.query["wikipage"], (isPerson, body) ->
     res.send body
   
 app.listen 3000

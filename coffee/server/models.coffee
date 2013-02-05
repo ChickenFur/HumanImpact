@@ -1,4 +1,4 @@
-makePerson = (name, dob, url) ->
+exports.makePerson = (name, dob, url) ->
   person =
     name : name
     dob : dob
