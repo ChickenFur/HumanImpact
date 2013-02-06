@@ -8,13 +8,14 @@ exports.parse = (data, wikipage) ->
   data = JSON.parse(data)
   results = _validate(data, wikipage)
   console.log results.message
-  if results.validData and _isPerson(data, wikipage)
+  if results.validData
     newPerson = models.makePerson(wikipage, 
       data["#{resourceURL}#{wikipage}"][birthDateTag][0].value, 
       "http://en.wikipedia.org/#{wikipage}")
     return newPerson
   else
-    return false
+    results.data = data
+    return results
 
 _validate = (data, wikipage) ->
   results = 
@@ -35,6 +36,10 @@ _validate = (data, wikipage) ->
   unless data["#{resourceURL}#{wikipage}"][rdfSyntaxTag][0].value
     results.validData = false
     results.message = "rdf Syntax Array Value is Bad"
+    person = data["#{resourceURL}#{wikipage}"][rdfSyntaxTag][0].value
+    unless person is isPersonTag
+      results.validData = false
+      results.message = "rdf Syntax Array Value is: " + person
     return results
   unless data["#{resourceURL}#{wikipage}"][birthDateTag]
     results.validData = false
@@ -49,15 +54,5 @@ _validate = (data, wikipage) ->
     results.message = "Birth Tag Array [0].value is Bad"
     return results
   results
-
-
-_isPerson = (data, wikipage) ->
-  if data["#{resourceURL}#{wikipage}"][rdfSyntaxTag][0].value is isPersonTag
-    return true
-    console.log("#{wikipage} is a Person") 
-  else
-    console.log("#{wikipage} is NOT a Person")
-    return false
-
 
 

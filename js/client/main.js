@@ -12,10 +12,12 @@
           url: "/dbpedia/?wikipage=" + event.target.value,
           dataType: "json",
           success: function(data) {
-            if (data) {
+            if (data.name) {
+              debugger;
               personTest = data;
               return $(".result").append("<p>Person Name: " + personTest.name + "<br>Date of Birth: " + personTest.dob + "<br>URL: " + personTest.url + "<br>Relations: " + personTest.realtions + "</p>");
             } else {
+              debugger;
               return $(".result").append("<p>Not a Person</p>");
             }
           },
