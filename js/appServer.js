@@ -9,12 +9,8 @@
   app = express();
 
   app.get('/dbpedia', function(req, res) {
-    return dbPedia.getJSON(req.query["wikipage"], function(isPerson, body) {
-      if (isPerson) {
-        return res.send(body);
-      } else {
-        return res.send("Not a Person");
-      }
+    return dbPedia.getJSON(req.query["wikipage"], function(data) {
+      return res.send(data);
     });
   });
 
