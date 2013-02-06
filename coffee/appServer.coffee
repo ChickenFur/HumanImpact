@@ -5,7 +5,10 @@ app = express()
 
 app.get '/dbpedia', (req, res) ->
   dbPedia.getJSON req.query["wikipage"], (isPerson, body) ->
-    res.send body
+    if isPerson
+      res.send body
+    else
+      res.send "Not a Person"
 
 app.use "/", express.static __dirname + '/client'
   

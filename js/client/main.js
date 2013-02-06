@@ -12,11 +12,15 @@
           url: "/dbpedia/?wikipage=" + event.target.value,
           dataType: "json",
           success: function(data) {
-            personTest = data;
-            return $(".result").append("<p>Person Name: " + personTest.name + "<br>Date of Birth: " + personTest.dob + "<br>URL: " + personTest.url + "<br>Relations: " + personTest.realtions + "</p>");
+            if (data !== "Not a Person") {
+              personTest = data;
+              return $(".result").append("<p>Person Name: " + personTest.name + "<br>Date of Birth: " + personTest.dob + "<br>URL: " + personTest.url + "<br>Relations: " + personTest.realtions + "</p>");
+            } else {
+              return $(".result").append("<p>Not a Person</p>");
+            }
           },
           error: function(err) {
-            return console.log("Error:", err);
+            debugger;            return console.log("Error:", err);
           }
         };
         return $.ajax(settings);

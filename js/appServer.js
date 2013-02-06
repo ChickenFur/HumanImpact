@@ -10,7 +10,11 @@
 
   app.get('/dbpedia', function(req, res) {
     return dbPedia.getJSON(req.query["wikipage"], function(isPerson, body) {
-      return res.send(body);
+      if (isPerson) {
+        return res.send(body);
+      } else {
+        return res.send("Not a Person");
+      }
     });
   });
 

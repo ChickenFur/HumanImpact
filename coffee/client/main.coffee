@@ -7,10 +7,13 @@ $(document).ready () ->
         url : "/dbpedia/?wikipage=#{event.target.value}" 
         dataType : "json"
         success : (data)->
-          personTest = data
-          $(".result").append("<p>Person Name: #{personTest.name}<br>Date of Birth: #{personTest.dob}<br>URL: #{personTest.url}<br>Relations: #{personTest.realtions}</p>")
-
+          if data isnt "Not a Person"
+            personTest = data
+            $(".result").append("<p>Person Name: #{personTest.name}<br>Date of Birth: #{personTest.dob}<br>URL: #{personTest.url}<br>Relations: #{personTest.realtions}</p>")
+          else
+            $(".result").append "<p>Not a Person</p>"
         error : (err)->
+          debugger
           console.log "Error:", err
       
       $.ajax settings
