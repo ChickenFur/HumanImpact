@@ -8,7 +8,6 @@ $(document).ready () ->
         dataType : "json"
         success : (data)->
           if(data.name)
-            debugger
             personTest = data
             $(".result").append("<p>Person Name: #{personTest.name}<br>Date of Birth: #{personTest.dob}<br>URL: #{personTest.url}<br>Relations: #{personTest.realtions}</p>")
           else
