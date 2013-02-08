@@ -7,7 +7,6 @@ $(document).ready () ->
         url : "/dbpedia/?wikipage=#{event.target.value}" 
         dataType : "json"
         success : (data)->
-          debugger;
           if(data.name)
             personTest = data
             $(".result").append("<p>Person Name: #{personTest.name}<br>Date of Birth: #{personTest.dob}<br>URL: #{personTest.url}<br>Relations: #{personTest.realtions}</p>")
