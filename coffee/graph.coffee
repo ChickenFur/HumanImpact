@@ -1,31 +1,31 @@
-log = ->
-  window.debug != false && console.log.apply(console, arguments)
-  
-jsonp =  (query, callback) ->
-  window.__cb__ = callback or -> console.log(arguments)
-  url = "http://en.wikipedia.org/w/api.php?
-    action=query&
-    list=search&
-    srprop=size,links&
-    format=json&
-    callback=__cb__&
-    srsearch=" + query 
-  d3.select('head').append('script').attr('src', url) 
+log = -> window.debug != false && console.log.apply(console, arguments)
 
+urls =
+  search: (q) ->
+    "http://en.wikipedia.org/w/api.php?" +
+    "action=query&" + 
+    "list=search&" + 
+    "srprop=links&" +
+    "format=json&" + 
+    "callback=__cb__&" +
+    "srsearch=" + q
+  relevance: (q) ->
+    "action=query&" +
+    "prop=categories&" + 
+    "format=json&" +
+    "callback=__cb__&" + 
+    "titles=" + query 
+                  
+jsonp =  (query, callback) ->
+  window.__cb__ = callback or -> log(arguments)
+  d3.select('head').append('script').attr('src', urls.search(query))
+  
 mirror = (f) ->
   if "function" != typeof f then f = d3.ease.apply(d3, arguments) 
   (t) -> if t < .5 then f(2 * t) else f(2 - 2 * t) 
 
 rand_c = ->
   '#' + (0x1000000+(Math.random())*0xffffff).toString(16).substr(1,6)
-
-draw = (c) ->
-  c.attr('fill', rand_c)
-    .transition()
-    .duration(-> Math.random() * 2000 + 2000)
-    .ease(mirror('bounce'))
-    .attr('cx', 900)
-    .each('end', draw.bind(null, c))
 
 drag = d3.behavior.drag().on 'drag', ->
   dx = d3.event.dx
@@ -44,28 +44,42 @@ drag = d3.behavior.drag().on 'drag', ->
     x: (d) -> d.x 
     y: (d) -> d.y
     
-distance = (a, b) ->
-  xd = a.x - b.x
-  yd = a.y - a.y
+distance = (x1, y1, x2, y2) ->
+  xd = x1 - x2
+  yd = y1 - y2
   Math.sqrt(xd * xd + yd * yd)
 
-links = []
+dist = (a, b) ->
+  xd = a.x - b.x
+  yd = a.y - b.y
+  Math.sqrt(xd * xd + yd * yd)
 
+scale = d3.scale.linear()
+  .domain([0,9])
+  .range([0,Math.PI * 2])
+
+links = []
+count = 0
 create = (wiki) ->
+  h = (window.innerHeight / 2) 
+  w = (window.innerWidth / 2)
+  count++
   wiki.query.search.forEach (obj, index) ->
-    obj.x = Math.random() * window.innerWidth
-    obj.y = Math.random() * window.innerHeight
+    obj.x = w + 100 * count * Math.cos(scale(index))
+    obj.y = h + 100 * count * Math.sin(scale(index))
+    x = -> jsonp(obj.title, create)
+    setTimeout x, 2000 if index < 1
 
   nodes = d3.select('svg').selectAll('.node').data(wiki.query.search)
     .enter().append('circle')
     .call(drag)
     .transition()
+    .delay((d, i) -> i * 50)
     .attr
       cx: (d) -> d.x
-      cy: (d, i) -> d.y
+      cy: (d) -> d.y
       fill: rand_c
       r: 25
-
   nodes.each (d, i) ->
     d3.select('svg').append('text').datum(d)
       .text(d.title)
@@ -73,25 +87,38 @@ create = (wiki) ->
       .attr
         x: (d) -> d.x
         y: (d) -> d.y
-        stroke: rand_c
+        fill: rand_c
         'font-family': 'Deja Vu Sans Mono'
-  nodes.each (a) -> #fixme
-    nodes.each (b) ->
-      if 200 > distance(a, b) and a != b
-        links.push from: a, to: b
-          
+
+  q = d3.geom.quadtree(wiki.query.search, innerWidth, innerHeight)
+  i = 0
+  # d3.selectAll('circle').data().forEach (d, i) ->
+  #   q.visit (node, x1, y1, x2, y2) ->
+  #     if 200 > distance(x1, y1, x2, y2) and a != b
+  #       links.push
+  #         from: a
+  #         to: b
+
+  d3.selectAll('circle').data().forEach (a) ->
+    d3.selectAll('circle').data().forEach (b) ->
+      if 200 > dist(a, b) and a != b
+        links.push
+          from: a
+          to: b
+      
   d3.select('svg').selectAll('line').data(links)
     .enter().insert('line', '*')
     .attr
+      'stroke-width': 2
       stroke: -> document.body.style.background
       x1: (d) -> d.from.x
       y1: (d) -> d.from.y
       x2: (d) -> d.to.x
       y2: (d) -> d.to.y
     .transition()
-    .delay(500)
+    .delay((d, i) -> i * 25)
     .attr
-      stroke: 'pink'
+      stroke: rand_c
 
 init = ->
   body = d3.select('body').style background: '#333'
@@ -105,19 +132,15 @@ init = ->
         jsonp(d3.event.target.value, create)
         d3.event.target.value = ''
         
-  c = body.append('svg').append('circle') 
-  c.attr
-    r: 100
-    cx: 123
-    cy: 200
-    opacity: .3
-  draw(c) 
-  test = ""
+  svg = body.append('svg')
+  test = "ocean"
   test && jsonp(test, create)
-  
-d3.select(window).on('load', init)
+
 x = 0
 rotate = ->
   d3.selectAll('text').attr('rotate', -> x++)
 
-#setInterval rotate, 10
+d3.select(window)
+  .on('keydown', -> setInterval rotate, 10 if d3.event.which == 27)
+  .on('load', init)
+  

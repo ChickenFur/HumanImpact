@@ -14,7 +14,10 @@
 
   "optionalDependencies" :{},
 
-  "scripts": {"test": "mocha js/test"}
+  "scripts": {
+      "test": "mocha js/test",
+      "run": "node refresher.js",
+             }
 
 }
   
