@@ -3,26 +3,26 @@ log = -> window.debug != false && console.log.apply(console, arguments)
 urls =
   search: (q) ->
     "http://en.wikipedia.org/w/api.php?" +
-    "action=query&" + 
-    "list=search&" + 
+    "action=query&" +
+    "list=search&" +
     "srprop=links&" +
-    "format=json&" + 
+    "format=json&" +
     "callback=__cb__&" +
     "srsearch=" + q
   relevance: (q) ->
     "action=query&" +
-    "prop=categories&" + 
+    "prop=categories&" +
     "format=json&" +
-    "callback=__cb__&" + 
-    "titles=" + query 
-                  
+    "callback=__cb__&" +
+    "titles=" + query
+
 jsonp =  (query, callback) ->
   window.__cb__ = callback or -> log(arguments)
   d3.select('head').append('script').attr('src', urls.search(query))
-  
+
 mirror = (f) ->
-  if "function" != typeof f then f = d3.ease.apply(d3, arguments) 
-  (t) -> if t < .5 then f(2 * t) else f(2 - 2 * t) 
+  if "function" != typeof f then f = d3.ease.apply(d3, arguments)
+  (t) -> if t < .5 then f(2 * t) else f(2 - 2 * t)
 
 rand_c = ->
   '#' + (0x1000000+(Math.random())*0xffffff).toString(16).substr(1,6)
@@ -33,17 +33,17 @@ drag = d3.behavior.drag().on 'drag', ->
   d3.select(@).attr
     cx: (d) -> d.x += dx
     cy: (d) -> d.y += dy
-    
+
   d3.selectAll('line').attr
-    x1: (d) -> d.from.x 
-    y1: (d) -> d.from.y 
-    x2: (d) -> d.to.x 
+    x1: (d) -> d.from.x
+    y1: (d) -> d.from.y
+    x2: (d) -> d.to.x
     y2: (d) -> d.to.y
-    
+
   d3.selectAll('text').attr
-    x: (d) -> d.x 
+    x: (d) -> d.x
     y: (d) -> d.y
-    
+
 distance = (x1, y1, x2, y2) ->
   xd = x1 - x2
   yd = y1 - y2
@@ -61,7 +61,7 @@ scale = d3.scale.linear()
 links = []
 count = 0
 create = (wiki) ->
-  h = (window.innerHeight / 2) 
+  h = (window.innerHeight / 2)
   w = (window.innerWidth / 2)
   count++
   wiki.query.search.forEach (obj, index) ->
@@ -105,7 +105,7 @@ create = (wiki) ->
         links.push
           from: a
           to: b
-      
+
   d3.select('svg').selectAll('line').data(links)
     .enter().insert('line', '*')
     .attr
@@ -131,7 +131,7 @@ init = ->
       if d3.event.which == 13
         jsonp(d3.event.target.value, create)
         d3.event.target.value = ''
-        
+
   svg = body.append('svg')
   test = "ocean"
   test && jsonp(test, create)
@@ -143,4 +143,4 @@ rotate = ->
 d3.select(window)
   .on('keydown', -> setInterval rotate, 10 if d3.event.which == 27)
   .on('load', init)
-  
+
