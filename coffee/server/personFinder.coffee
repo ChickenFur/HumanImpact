@@ -1,0 +1,1 @@
+api.php ? action=query & list=alllinks & alprefix=API & alnamespace=1 & alprop=ids|title
