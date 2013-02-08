@@ -10,7 +10,6 @@ exports.parse = (data, wikipage) ->
   try
     data = JSON.parse(data)
     results = _validatePerson(data, wikipage)
-    console.log results.message
     birthInfo = _validateBirth(data, wikipage).year
     birthInfo = _convertIfXsd(birthInfo)  
     if results.validData
@@ -33,18 +32,14 @@ exports.parse = (data, wikipage) ->
 _findBirthDate = (data) ->
   birthInfoStart = data.indexOf( "\"http://dbpedia.org/property/birthDate" )
   data = data.slice(birthInfoStart)
-  console.log data.indexOf("value : ") 
   data = data.slice(data.indexOf("value") + 10) 
   data = data.slice(0, data.indexOf("\" ,"))
-  console.log data
+
   data
 
 _convertIfXsd = (dob) ->
-  console.log dob
-  if (dob.length is 25)
-    console.log "First result dob: ", dob
-    dob = -(dob.slice(0,4))
-    console.log dob
+  if (dob.length is 25)  
+    dob = -(dob.slice(0,4))    
   dob
 
 
@@ -79,7 +74,6 @@ _validateBirth = (data, wikipage) ->
     validBirth : true
     year : null
     message : ""
-  console.log results
   try
     results.year = data["#{resourceURL}#{wikipage}"][birthDateTag][0].value
     results.message = "birthDateTag worked"
@@ -93,7 +87,6 @@ _validateBirth = (data, wikipage) ->
         results.message = "birthYearPropTag worked"
       catch err
         results.validBirth = false
-  console.log ("I got to the " + results.message)
   results
  
 

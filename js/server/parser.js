@@ -21,7 +21,6 @@
     try {
       data = JSON.parse(data);
       results = _validatePerson(data, wikipage);
-      console.log(results.message);
       birthInfo = _validateBirth(data, wikipage).year;
       birthInfo = _convertIfXsd(birthInfo);
       if (results.validData) {
@@ -44,19 +43,14 @@
     var birthInfoStart;
     birthInfoStart = data.indexOf("\"http://dbpedia.org/property/birthDate");
     data = data.slice(birthInfoStart);
-    console.log(data.indexOf("value : "));
     data = data.slice(data.indexOf("value") + 10);
     data = data.slice(0, data.indexOf("\" ,"));
-    console.log(data);
     return data;
   };
 
   _convertIfXsd = function(dob) {
-    console.log(dob);
     if (dob.length === 25) {
-      console.log("First result dob: ", dob);
       dob = -(dob.slice(0, 4));
-      console.log(dob);
     }
     return dob;
   };
@@ -102,7 +96,6 @@
       year: null,
       message: ""
     };
-    console.log(results);
     try {
       results.year = data["" + resourceURL + wikipage][birthDateTag][0].value;
       results.message = "birthDateTag worked";
@@ -119,7 +112,6 @@
         }
       }
     }
-    console.log("I got to the " + results.message);
     return results;
   };
 
