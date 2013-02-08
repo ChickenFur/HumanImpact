@@ -11,10 +11,10 @@ exports.parse = (data, wikipage) ->
     data = JSON.parse(data)
     results = _validatePerson(data, wikipage)
     console.log results.message
-    _validateBirth(data, wikipage)
+    birthInfo = _validateBirth(data, wikipage).year
+    birthInfo = _convertIfXsd(birthInfo)  
     if results.validData
-      newPerson = models.makePerson(wikipage, 
-        _validateBirth(data, wikipage).year, 
+      newPerson = models.makePerson(wikipage, birthInfo, 
         "http://en.wikipedia.org/#{wikipage}")
       newPerson.data = data
       return newPerson
@@ -22,6 +22,7 @@ exports.parse = (data, wikipage) ->
       results.data = data
       return results
   catch error
+    console.log error
     birthDate = _findBirthDate(data)
     newPerson = models.makePerson(wikipage,
       birthDate,
@@ -37,6 +38,14 @@ _findBirthDate = (data) ->
   data = data.slice(0, data.indexOf("\" ,"))
   console.log data
   data
+
+_convertIfXsd = (dob) ->
+  console.log dob
+  if (dob.length is 25)
+    console.log "First result dob: ", dob
+    dob = -(dob.slice(0,4))
+    console.log dob
+  dob
 
 
 _validatePerson = (data, wikipage) ->
