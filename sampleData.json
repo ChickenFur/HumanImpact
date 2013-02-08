@@ -1,0 +1,12 @@
+{
+  {
+    name:"Napolean",
+    dob: 1769-08-15,
+    URL: "http://en.wikipedia.org/Napoleon",
+    relations : 
+    {
+      "Carlo_Buonaparte" : 1746-03-27,
+      "Arthur_Wellesley,_1st_Duke_of_Wellington": 1769-06-01
+    }
+  }
+}

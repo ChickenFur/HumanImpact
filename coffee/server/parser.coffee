@@ -7,19 +7,37 @@ birthDatePropTag = "http://dbpedia.org/property/birthDate"
 birthYearTag = "http://dbpedia.org/ontology/birthYear"
 
 exports.parse = (data, wikipage) ->
-  data = JSON.parse(data)
-  results = _validatePerson(data, wikipage)
-  console.log results.message
-  _validateBirth(data, wikipage)
-  if results.validData
-    newPerson = models.makePerson(wikipage, 
-      _validateBirth(data, wikipage).year, 
+  try
+    data = JSON.parse(data)
+    results = _validatePerson(data, wikipage)
+    console.log results.message
+    _validateBirth(data, wikipage)
+    if results.validData
+      newPerson = models.makePerson(wikipage, 
+        _validateBirth(data, wikipage).year, 
+        "http://en.wikipedia.org/#{wikipage}")
+      newPerson.data = data
+      return newPerson
+    else
+      results.data = data
+      return results
+  catch error
+    birthDate = _findBirthDate(data)
+    newPerson = models.makePerson(wikipage,
+      birthDate,
       "http://en.wikipedia.org/#{wikipage}")
-    newPerson.data = data
     return newPerson
-  else
-    results.data = data
-    return results
+
+
+_findBirthDate = (data) ->
+  birthInfoStart = data.indexOf( "\"http://dbpedia.org/property/birthDate" )
+  data = data.slice(birthInfoStart)
+  console.log data.indexOf("value : ") 
+  data = data.slice(data.indexOf("value") + 10) 
+  data = data.slice(0, data.indexOf("\" ,"))
+  console.log data
+  data
+
 
 _validatePerson = (data, wikipage) ->
   results = 
