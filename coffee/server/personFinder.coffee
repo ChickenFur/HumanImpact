@@ -22,3 +22,4 @@ exports.getAllLinks = (wikipage, callBack) ->
 #if result is a person, save in for to db and add id to relations
 
 #repeat
+
