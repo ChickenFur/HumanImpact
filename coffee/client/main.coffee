@@ -17,3 +17,15 @@ $(document).ready () ->
           console.log "Error:", err
       
       $.ajax settings
+
+  $('#checkWiki').on "click", (event) ->
+    settings = 
+      url : "/wikipedia/?wikipage=#{$(".nameInput").val()}"
+      dataType : "json"
+      success : (data) ->
+        debugger
+      error : (err) ->
+        console.log "Error with Wikipedia: ", err
+
+    $.ajax settings
+

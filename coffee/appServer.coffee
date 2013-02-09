@@ -1,6 +1,7 @@
 express = require 'express'
 dbPedia = require './server/dbPediaScraper'
 mongoDB = require './server/mongoDBConnector'
+personFinder = require './server/personFinder'
 
 app = express()
 
@@ -14,5 +15,10 @@ app.get '/dbpedia', (req, res) ->
         mongoDB.addPerson data, () ->
           res.send data
 app.use "/", express.static __dirname + '/client'
-  
+
+app.get '/wikipedia', (req, res) ->
+  personFinder.getAllLinks req.query['wikipage'], (err, data) ->
+    console.log ("Wiki data: " + data)
+    res.send data
+ 
 app.listen process.env.PORT

@@ -5,7 +5,7 @@
   personTest = null;
 
   $(document).ready(function() {
-    return $('.nameInput').on("keyup", function(event) {
+    $('.nameInput').on("keyup", function(event) {
       var settings;
       if (event.keyCode === 13) {
         settings = {
@@ -26,6 +26,20 @@
         };
         return $.ajax(settings);
       }
+    });
+    return $('#checkWiki').on("click", function(event) {
+      var settings;
+      settings = {
+        url: "/wikipedia/?wikipage=" + ($(".nameInput").val()),
+        dataType: "json",
+        success: function(data) {
+          debugger;
+        },
+        error: function(err) {
+          return console.log("Error with Wikipedia: ", err);
+        }
+      };
+      return $.ajax(settings);
     });
   });
 
