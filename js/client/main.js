@@ -5,7 +5,7 @@
   personTest = null;
 
   $(document).ready(function() {
-    return $('.nameInput').on("keyup", function(event) {
+    $('.nameInput').on("keyup", function(event) {
       var settings;
       if (event.keyCode === 13) {
         settings = {
@@ -26,6 +26,12 @@
         };
         return $.ajax(settings);
       }
+    });
+    return $('.findBirthDate').on("click", function(event) {
+      return findBirthDate($(".nameInput").val(), function(birth) {
+        $(".result").html("");
+        return $(".result").append(birth);
+      });
     });
   });
 
