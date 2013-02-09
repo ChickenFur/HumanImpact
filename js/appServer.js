@@ -11,7 +11,8 @@
   app = express();
 
   app.get('/dbpedia', function(req, res) {
-    return mongoDB.getPerson(req.query['wikipage'], function(mongoResults) {
+    return mongoDB.getPerson(req.query['wikipage'], function(err, mongoResults) {
+      console.log(mongoResults);
       if (mongoResults) {
         return res.send(mongoResults);
       } else {

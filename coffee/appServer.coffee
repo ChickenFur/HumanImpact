@@ -5,7 +5,8 @@ mongoDB = require './server/mongoDBConnector'
 app = express()
 
 app.get '/dbpedia', (req, res) ->
-  mongoDB.getPerson req.query['wikipage'], (mongoResults) ->
+  mongoDB.getPerson req.query['wikipage'], (err, mongoResults) ->
+    console.log mongoResults
     if mongoResults
       res.send mongoResults
     else

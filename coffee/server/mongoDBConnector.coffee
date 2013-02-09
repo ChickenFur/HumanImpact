@@ -26,4 +26,4 @@ exports.addPerson = ( person, callBack )->
     callBack()
 
 exports.getPerson = (personName, callBack) ->
-  Person.findOne name: personName , callBack
+  Person.findOne( {name: personName} , callBack )
