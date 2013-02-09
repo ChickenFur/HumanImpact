@@ -17,3 +17,6 @@ $(document).ready () ->
           console.log "Error:", err
       
       $.ajax settings
+  $('.wikipedia').on "click", (event) ->
+    settings = 
+      url : :"http://en.wikipedia.org/w/api.php?"
