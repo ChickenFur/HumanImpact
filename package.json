@@ -3,7 +3,7 @@
   "description": "Klout for dead people",
   "version":"0.0.1",
   "engines": {
-    "node": "0.8.x",
+    "node": "0.8.16",
     "npm":  "1.1.x"
   },
   "dependencies": {
@@ -19,7 +19,7 @@
 
   "optionalDependencies" :{},
 
-  "scripts": {"test": "mocha js/test"}
+  "scripts": {"test": "mocha test/js/test"}
 
 }
   
