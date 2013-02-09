@@ -44,7 +44,7 @@
   };
 
   exports.getPerson = function(personName, callBack) {
-    return Person.find({
+    return Person.findOne({
       name: personName
     }, callBack);
   };

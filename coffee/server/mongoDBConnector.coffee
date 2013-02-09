@@ -6,7 +6,7 @@ mongoose.connect("mongodb://#{user}:#{pwd}@linus.mongohq.com:10069/humanimpact")
 db = mongoose.connection
 db.once 'open', ()->
   console.log "Connection Open"
-  
+
 personSchema = mongoose.Schema
                 name: String,
                 url: String,
@@ -26,4 +26,4 @@ exports.addPerson = ( person, callBack )->
     callBack()
 
 exports.getPerson = (personName, callBack) ->
-  Person.find { name: personName }, callBack
+  Person.findOne name: personName , callBack
