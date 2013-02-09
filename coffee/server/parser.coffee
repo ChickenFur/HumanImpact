@@ -10,7 +10,7 @@ exports.parse = (data, wikipage) ->
   try
     data = JSON.parse(data)
     results = _validatePerson(data, wikipage)
-    birthInfo = _validateBirth(data, wikipage).year
+    birthInfo = _validateBirth(data, wikipage).year  
     birthInfo = _convertIfXsd(birthInfo)  
     if results.validData
       newPerson = models.makePerson(wikipage, birthInfo, 
@@ -75,15 +75,15 @@ _validateBirth = (data, wikipage) ->
     year : null
     message : ""
   try
-    results.year = data["#{resourceURL}#{wikipage}"][birthDateTag][0].value
+    results.year = data["#{resourceURL}#{wikipage}"][birthDatePropTag][0].value
     results.message = "birthDateTag worked"
   catch err
     try 
-      results.year = data["#{resourceURL}#{wikipage}"][birthYearTag][0].value
+      results.year = data["#{resourceURL}#{wikipage}"][birthDateTag][0].value
       results.message = "birthYearTag worked"
     catch err
       try 
-        results.year = data["#{resourceURL}#{wikipage}"][birthDatePropTag][0].value
+        results.year = data["#{resourceURL}#{wikipage}"][birthYearTag][0].value
         results.message = "birthYearPropTag worked"
       catch err
         results.validBirth = false

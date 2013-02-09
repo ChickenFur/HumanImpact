@@ -97,15 +97,15 @@
       message: ""
     };
     try {
-      results.year = data["" + resourceURL + wikipage][birthDateTag][0].value;
+      results.year = data["" + resourceURL + wikipage][birthDatePropTag][0].value;
       results.message = "birthDateTag worked";
     } catch (err) {
       try {
-        results.year = data["" + resourceURL + wikipage][birthYearTag][0].value;
+        results.year = data["" + resourceURL + wikipage][birthDateTag][0].value;
         results.message = "birthYearTag worked";
       } catch (err) {
         try {
-          results.year = data["" + resourceURL + wikipage][birthDatePropTag][0].value;
+          results.year = data["" + resourceURL + wikipage][birthYearTag][0].value;
           results.message = "birthYearPropTag worked";
         } catch (err) {
           results.validBirth = false;
