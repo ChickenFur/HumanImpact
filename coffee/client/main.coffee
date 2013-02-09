@@ -20,12 +20,31 @@ $(document).ready () ->
 
   $('#checkWiki').on "click", (event) ->
     settings = 
-      url : "/wikipedia/?wikipage=#{$(".nameInput").val()}"
-      dataType : "json"
+      url : "http://en.wikipedia.org/w/api.php?" +
+            "format=json&" +
+            "action=query&" +
+            "titles=#{$(".nameInput").val()}&" +
+            "pllimit=300&" +
+            "prop=links"
+
+      # http://en.wikipedia.org/w/api.php?action=query&titles=Napoleon&prop=categories&format=json
+
+      dataType : "jsonp"
       success : (data) ->
         debugger
+        $(".allLinks").html("")
+        pageId = Object.keys(data.query.pages)
+        allLinks = data.query.pages[pageId].links
+        for i in [0..allLinks.length]
+          eachLink = data.query.pages[pageId].links[i].title
+          eachLink = eachLink.replace /\s/g, "_" 
+          console.log eachLink
+          $(".allLinks").append eachLink
       error : (err) ->
         console.log "Error with Wikipedia: ", err
 
     $.ajax settings
+
+
+
 
