@@ -61,6 +61,7 @@ scale = d3.scale.linear()
 links = []
 count = 0
 create = (wiki) ->
+  console.log wiki
   h = (window.innerHeight / 2) 
   w = (window.innerWidth / 2)
   count++
@@ -110,15 +111,17 @@ create = (wiki) ->
     .enter().insert('line', '*')
     .attr
       'stroke-width': 2
-      stroke: -> document.body.style.background
       x1: (d) -> d.from.x
       y1: (d) -> d.from.y
+      x2: (d) -> d.from.x
+      y2: (d) -> d.from.y
+      stroke: rand_c
+    .transition()
+    .duration(5000)
+    .ease(d3.ease('poly', 3))
+    .attr
       x2: (d) -> d.to.x
       y2: (d) -> d.to.y
-    .transition()
-    .delay((d, i) -> i * 25)
-    .attr
-      stroke: rand_c
 
 init = ->
   body = d3.select('body').style background: '#333'
