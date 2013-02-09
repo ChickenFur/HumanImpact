@@ -1,7 +1,6 @@
 mongoose = require('mongoose');
 user = process.env.mongoUser
 pwd = process.env.mongoPWD
-console.log("mongodb://#{user}:#{pwd}@linus.mongohq.com:10069/humanimpact")
 mongoose.connect("mongodb://#{user}:#{pwd}@linus.mongohq.com:10069/humanimpact")
 db = mongoose.connection
 db.once 'open', ()->
