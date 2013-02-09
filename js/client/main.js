@@ -14,7 +14,7 @@
           success: function(data) {
             if (data.name) {
               personTest = data;
-              return $(".result").append("<p>Person Name: " + personTest.name + "<br>Date of Birth: " + personTest.dob + "<br>URL: " + personTest.url + "<br>Relations: " + personTest.realtions + "</p>");
+              return $(".result").append("<p>Person Name: " + personTest.name + "<br>Date of Birth: " + personTest.dob + "<br>URL: " + personTest.url + "<br>Relations: " + personTest.relations + "</p>");
             } else {
               return $(".result").append("<p>Not a Person</p>");
             }

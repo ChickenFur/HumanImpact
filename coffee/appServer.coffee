@@ -1,12 +1,17 @@
 express = require 'express'
 dbPedia = require './server/dbPediaScraper'
+mongoDB = require './server/mongoDBConnector'
 
 app = express()
 
 app.get '/dbpedia', (req, res) ->
-  dbPedia.getJSON req.query["wikipage"], (data) ->
-      res.send data
-
+  mongoDB.getPerson req.query['wikipage'], (mongoResults) ->
+    if mongoResults
+      res.send mongoResults
+    else
+      dbPedia.getJSON req.query["wikipage"], (data) ->
+        mongoDB.addPerson data, () ->
+          res.send data
 app.use "/", express.static __dirname + '/client'
   
 app.listen 3000

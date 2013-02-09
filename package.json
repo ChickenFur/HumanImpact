@@ -8,7 +8,9 @@
   "dependencies": {
     "mocha" : "",
     "express" : "3.x",
-    "request" : ""},
+    "request" : "",
+    "mongodb" : "",
+    "mongoose": ""},
 
   "devDependencies" : {
     "mocha" : ""

@@ -9,7 +9,7 @@ $(document).ready () ->
         success : (data)->
           if(data.name)
             personTest = data
-            $(".result").append("<p>Person Name: #{personTest.name}<br>Date of Birth: #{personTest.dob}<br>URL: #{personTest.url}<br>Relations: #{personTest.realtions}</p>")
+            $(".result").append("<p>Person Name: #{personTest.name}<br>Date of Birth: #{personTest.dob}<br>URL: #{personTest.url}<br>Relations: #{personTest.relations}</p>")
           else
             $(".result").append "<p>Not a Person</p>"
         error : (err)->
