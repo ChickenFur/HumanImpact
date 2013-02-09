@@ -26,18 +26,13 @@ $(document).ready () ->
             "titles=#{$(".nameInput").val()}&" +
             "pllimit=300&" +
             "prop=links"
-
-      # http://en.wikipedia.org/w/api.php?action=query&titles=Napoleon&prop=categories&format=json
-
       dataType : "jsonp"
       success : (data) ->
-        debugger
         $(".allLinks").html("")
         pageId = Object.keys(data.query.pages)
         allLinks = data.query.pages[pageId].links
         for i in [0..allLinks.length]
-          eachLink = data.query.pages[pageId].links[i].title
-          eachLink = eachLink.replace /\s/g, "_" 
+          eachLink = data.query.pages[pageId].links[i].title.replace /\s/g, "_" 
           console.log eachLink
           $(".allLinks").append eachLink
       error : (err) ->

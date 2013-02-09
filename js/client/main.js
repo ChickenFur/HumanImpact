@@ -33,15 +33,13 @@
         url: "http://en.wikipedia.org/w/api.php?" + "format=json&" + "action=query&" + ("titles=" + ($(".nameInput").val()) + "&") + "pllimit=300&" + "prop=links",
         dataType: "jsonp",
         success: function(data) {
-          debugger;
           var allLinks, eachLink, i, pageId, _i, _ref, _results;
           $(".allLinks").html("");
           pageId = Object.keys(data.query.pages);
           allLinks = data.query.pages[pageId].links;
           _results = [];
           for (i = _i = 0, _ref = allLinks.length; 0 <= _ref ? _i <= _ref : _i >= _ref; i = 0 <= _ref ? ++_i : --_i) {
-            eachLink = data.query.pages[pageId].links[i].title;
-            eachLink = eachLink.replace(/\s/g, "_");
+            eachLink = data.query.pages[pageId].links[i].title.replace(/\s/g, "_");
             console.log(eachLink);
             _results.push($(".allLinks").append(eachLink));
           }
