@@ -10,18 +10,27 @@
 
   app = express();
 
-  app.get('/dbpedia', function(req, res) {
+  app.get('/getPerson', function(req, res) {
     return mongoDB.getPerson(req.query['wikipage'], function(err, mongoResults) {
-      console.log(mongoResults);
+      console.log("Mongo Results", mongoResults);
       if (mongoResults) {
         return res.send(mongoResults);
       } else {
-        return dbPedia.getJSON(req.query["wikipage"], function(data) {
-          return mongoDB.addPerson(data, function() {
-            return res.send(data);
-          });
-        });
+        return res.send("Not In DB");
       }
+    });
+  });
+
+  app.use('/savePerson', function(req, res) {
+    var newPerson;
+    newPerson = {
+      name: req.query["name"],
+      dob: req.query["dob"],
+      url: "http://en.wikipedia.org/" + req.query["name"],
+      relations: req.query["relations"]
+    };
+    return mongoDB.addPerson(newPerson, function(error) {
+      return res.send("stored in DB, error: " + error);
     });
   });
 

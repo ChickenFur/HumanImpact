@@ -1,4 +1,15 @@
-define ['findBirth'], function(findBirth) ->
+define "findBirth", () ->
+  _parseBirthDate = (data) ->
+    categories = data.query.pages[Object.keys(data.query.pages)[0]].categories
+    birth = ""
+    for n in categories
+      birthLoc = n.title.indexOf ("birth")
+      unless birthLoc is -1
+        birth = n.title.slice(9, birthLoc-1)
+    if birth is ""
+      birth = "Not a Person"
+    birth
+
   findBirthDate = (name, callBack) ->
     settings = 
       url : "http://en.wikipedia.org/w/api.php?action=query&titles=#{name}&prop=categories&format=json"
@@ -8,12 +19,4 @@ define ['findBirth'], function(findBirth) ->
         callBack(birthDate)    
       error : (error) ->
         callBack(error)
-
     $.ajax settings
-
-  _parseBirthDate = (data) ->
-    birthData = data.indexOf( births )
-    if birthData is -1
-      return "Not a Person"
-    data = data.slice(0, birthData)
-    data 
