@@ -98,6 +98,9 @@
     };
     try {
       results.year = data["" + resourceURL + wikipage][birthDatePropTag][0].value;
+      if (results.year.indexOf("http://dbpedia.org/resource") !== -1) {
+        throw "invalid date";
+      }
       results.message = "birthDateTag worked";
     } catch (err) {
       try {

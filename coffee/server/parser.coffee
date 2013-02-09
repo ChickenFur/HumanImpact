@@ -76,6 +76,8 @@ _validateBirth = (data, wikipage) ->
     message : ""
   try
     results.year = data["#{resourceURL}#{wikipage}"][birthDatePropTag][0].value
+    unless results.year.indexOf("http://dbpedia.org/resource") is -1
+      throw "invalid date"
     results.message = "birthDateTag worked"
   catch err
     try 
