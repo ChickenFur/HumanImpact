@@ -1,14 +1,10 @@
-require ["findBirth"], (findBirth) -> 
-  $(document).ready () ->
-    $('.nameInput').on "keyup", (event) ->
-      if event.keyCode == 13
-        $('.findBirthDate').click()
-
-    $('.findBirthDate').on "click", (event) ->
-      searchName = $(".nameInput").val()
-      settings = 
+require ["findBirth", "graph"], (findBirth) ->
+  
+  getPeople = (searchName)->
+    settings = 
         url : "/getPerson/?wikipage=#{searchName}" 
         success : (data)->
+          console.log data
           dob = ""
           if(data.name)
             _showResult(data.name, data.dob, data.url, data.relations)
@@ -27,6 +23,14 @@ require ["findBirth"], (findBirth) ->
         error : (err)->
           console.log("Error in Get Person Ajax Request:", err)
       $.ajax settings
+  $(document).ready () ->
+    $('.nameInput').on "keyup", (event) ->
+      if event.keyCode == 13
+        $('.findBirthDate').click()
+
+    $('.findBirthDate').on "click", (event) ->
+      searchName = $(".nameInput").val()
+      getPeople(searchName)
   
   _storeRelations = (searchName, validLinks, dob, callBack) ->
     settings = 
