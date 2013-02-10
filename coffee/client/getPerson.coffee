@@ -4,17 +4,21 @@ define "getPerson", ["findBirth", "graph"], (findBirth, graph) ->
         url : "/getPerson/?wikipage=#{searchName}" 
         success : (data)->
           if(data.name)
-
-            graph.create(data)
-            $("body").addClass("fadedBackground")
-            #_showResult(data.name, data.dob, data.url, data.relations)
+            _showResult(data.name, data.dob, data.url, data.relations)
+            # graph.create(data)
           if(data is "Not In DB")
-            _crawlWikipedia(data, searchName)   
+            $("#loadingGif").addClass("showLoading")
+            _crawlWikipedia(data, searchName, () ->
+              $("#loadingGif").addClass("hideLoading").removeClass("showLoading")
+              $('.findBirthDate').click()
+              _showResult(data.name, data.dob, data.url, data.relations)
+              # graph.create(data)
+            )   
         error : (err)->
           console.log("Error in Get Person Ajax Request:", err)
       $.ajax settings
 
-  _crawlWikipedia = (data, searchName) ->
+  _crawlWikipedia = (data, searchName, callBack) ->
     dob = ""
     _getDOB searchName, (birth) ->
       dob = birth
@@ -22,7 +26,8 @@ define "getPerson", ["findBirth", "graph"], (findBirth, graph) ->
         _checkIfLinksArePeople links, (validLinks) ->               
           _storeRelations searchName, validLinks, dob, (err) ->                    
             if err
-              console.log "Error Saving Relations To DB:", err   
+              console.log "Error Saving Relations To DB:", err  
+            callBack() 
 
   _storeRelations = (searchName, validLinks, dob, callBack) ->
       settings = 
@@ -31,6 +36,7 @@ define "getPerson", ["findBirth", "graph"], (findBirth, graph) ->
           relations : JSON.stringify(validLinks)
         success : ()->
           console.log("Relations Stored")
+          callBack()
         error : (err) ->
           callBack(err)
       $.ajax settings
