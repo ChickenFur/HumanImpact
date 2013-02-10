@@ -13,6 +13,7 @@
             _showResult(data.name, data.dob, data.url, data.relations);
           }
           if (data === "Not In DB") {
+            $('.result').html("");
             $("#loadingGif").addClass("showLoading");
             return _crawlWikipedia(data, searchName, function() {
               $("#loadingGif").addClass("hideLoading").removeClass("showLoading");

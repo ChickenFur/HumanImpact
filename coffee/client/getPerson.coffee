@@ -7,6 +7,7 @@ define "getPerson", ["findBirth", "graph"], (findBirth, graph) ->
             _showResult(data.name, data.dob, data.url, data.relations)
             # graph.create(data)
           if(data is "Not In DB")
+            $('.result').html("")
             $("#loadingGif").addClass("showLoading")
             _crawlWikipedia(data, searchName, () ->
               $("#loadingGif").addClass("hideLoading").removeClass("showLoading")

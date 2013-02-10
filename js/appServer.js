@@ -10,7 +10,6 @@
 
   app.get('/getPerson', function(req, res) {
     return mongoDB.getPerson(req.query['wikipage'], function(err, mongoResults) {
-      console.log("Mongo Results", mongoResults);
       if (mongoResults) {
         return res.send(mongoResults);
       } else {
@@ -22,7 +21,6 @@
   app.use("/updatePerson", function(req, res) {
     var relations;
     relations = JSON.parse(req.headers.relations);
-    console.log(relations);
     return mongoDB.updatePersonRelations(req.query['name'], relations(function() {
       return console.log("Added Relations to db");
     }));
@@ -45,7 +43,6 @@
 
   app.get('/wikipedia', function(req, res) {
     return personFinder.getAllLinks(req.query['wikipage'], function(err, data) {
-      console.log("Wiki data: " + data);
       return res.send(data);
     });
   });
