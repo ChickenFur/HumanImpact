@@ -49,4 +49,12 @@
     }, callBack);
   };
 
+  exports.updatePersonRelations = function(name, relations, callBack) {
+    return Person.findOneAndUpdate({
+      name: name
+    }, {
+      relations: relations
+    }, callBack);
+  };
+
 }).call(this);
