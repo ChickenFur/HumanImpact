@@ -20,6 +20,5 @@
   "optionalDependencies" :{},
 
   "scripts": {"test": "mocha test/js/test"}
-
 }
   
