@@ -30,7 +30,7 @@ require ["findBirth"], (findBirth) ->
     settings = 
       url : "/updatePerson/?name=#{searchName}"
       headers :
-        relations : validLinks
+        relations : JSON.stringify(validLinks)
       success : ()->
         console.log("Relations Stored")
       error : (err) ->
@@ -42,7 +42,6 @@ require ["findBirth"], (findBirth) ->
     for link, index in links
       findBirth link, links.length-1, index, (birth, name, total, index) => 
         if birth isnt "Not a Person"
-          debugger
           peopleLinks.push(name)
         if index is total
           callBack(peopleLinks)
@@ -53,7 +52,7 @@ require ["findBirth"], (findBirth) ->
             "format=json&" +
             "action=query&" +
             "titles=#{searchName}&" +
-            "pllimit=300&" +
+            "pllimit=20&" +
             "prop=links"
       dataType : "jsonp"
       success : (data) ->

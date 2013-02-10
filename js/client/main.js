@@ -45,7 +45,7 @@
       settings = {
         url: "/updatePerson/?name=" + searchName,
         headers: {
-          relations: validLinks
+          relations: JSON.stringify(validLinks)
         },
         success: function() {
           return console.log("Relations Stored");
@@ -64,7 +64,6 @@
         link = links[index];
         _results.push(findBirth(link, links.length - 1, index, function(birth, name, total, index) {
           if (birth !== "Not a Person") {
-            debugger;
             peopleLinks.push(name);
           }
           if (index === total) {
@@ -77,7 +76,7 @@
     _getLinks = function(searchName, callBack) {
       var settings;
       settings = {
-        url: "http://en.wikipedia.org/w/api.php?" + "format=json&" + "action=query&" + ("titles=" + searchName + "&") + "pllimit=300&" + "prop=links",
+        url: "http://en.wikipedia.org/w/api.php?" + "format=json&" + "action=query&" + ("titles=" + searchName + "&") + "pllimit=20&" + "prop=links",
         dataType: "jsonp",
         success: function(data) {
           var allLinks, i, pageId, resultsArray, _i, _len;

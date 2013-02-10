@@ -12,7 +12,9 @@ app.get '/getPerson', (req, res) ->
       res.send "Not In DB"
 
 app.use "/updatePerson", (req, res) ->
-  mongoDB.updatePersonRelations req.query['name'], req.headers.relations () ->
+  relations = JSON.parse req.headers.relations
+  console.log relations
+  mongoDB.updatePersonRelations req.query['name'], relations () ->
     console.log "Added Relations to db"
 
 app.use '/savePerson', (req, res) ->
