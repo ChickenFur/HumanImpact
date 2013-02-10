@@ -10,11 +10,15 @@
         url: "/getPerson/?wikipage=" + searchName,
         success: function(data) {
           if (data.name) {
-            graph.create(data);
-            $("body").addClass("fadedBackground");
+            _showResult(data.name, data.dob, data.url, data.relations);
           }
           if (data === "Not In DB") {
-            return _crawlWikipedia(data, searchName);
+            $("#loadingGif").addClass("showLoading");
+            return _crawlWikipedia(data, searchName, function() {
+              $("#loadingGif").addClass("hideLoading").removeClass("showLoading");
+              $('.findBirthDate').click();
+              return _showResult(data.name, data.dob, data.url, data.relations);
+            });
           }
         },
         error: function(err) {
@@ -23,7 +27,7 @@
       };
       return $.ajax(settings);
     };
-    _crawlWikipedia = function(data, searchName) {
+    _crawlWikipedia = function(data, searchName, callBack) {
       var dob;
       dob = "";
       return _getDOB(searchName, function(birth) {
@@ -32,8 +36,9 @@
           return _checkIfLinksArePeople(links, function(validLinks) {
             return _storeRelations(searchName, validLinks, dob, function(err) {
               if (err) {
-                return console.log("Error Saving Relations To DB:", err);
+                console.log("Error Saving Relations To DB:", err);
               }
+              return callBack();
             });
           });
         });
@@ -47,7 +52,8 @@
           relations: JSON.stringify(validLinks)
         },
         success: function() {
-          return console.log("Relations Stored");
+          console.log("Relations Stored");
+          return callBack();
         },
         error: function(err) {
           return callBack(err);
