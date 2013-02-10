@@ -38,23 +38,26 @@ define "graph", () ->
     yd = a.y - b.y
     Math.sqrt(xd * xd + yd * yd)
 
-  xscale = d3.scale.linear()
-    .domain([-500, 2000])
-    .range([0, 1000])
-
   links = []
   count = 0
   create = (wiki) ->
+    dates = wiki.relations.map (d) ->parseInt(d.dob)
+    min = d3.min(dates)
+    max = d3.max(dates)
+    xscale = d3.scale.pow()
+      .domain([1750, 1850])
+      .range([0, innerWidth])
     return if (d3.selectAll('circle')[0].length > 30) 
     h = (window.innerHeight / 2) 
     w = (window.innerWidth / 2)
     count++
-    return console.log(wiki) if (! wiki.relations) 
+    return console.log(wiki) if (! wiki.relations)
     data = wiki.relations.map (data, index) ->
+      console.log(data)
       text: data.name
       count:count
       i: index
-      x: Math.random() * innerHeight
+      x: xscale(parseInt(data.dob) or 1950)
       y: Math.random() * innerHeight
       fill: rand_c()
       r: 15
@@ -67,7 +70,7 @@ define "graph", () ->
       .attr
         'fill-opacity': .5
         cx: (d) -> d.x
-        cy: (d) -> d.dob
+        cy: (d) -> d.y
         fill: (d) -> d.fill
       .call(drag)
       .transition()
@@ -76,10 +79,9 @@ define "graph", () ->
       .delay((d, i) -> i * 50)
       .attr
         r: (d) -> d.r
-    nodes.each (d, i) ->
-      return 10
+    d3.selectAll('circle').data().forEach (d, i) ->
       d3.select('.graph').append('text').datum(d)
-        .text(d.text.replace(/_/g,' '))
+        .text(d.text)
         .transition()
         .ease(d3.ease('cubic-in-out'))
         .attr
@@ -92,7 +94,7 @@ define "graph", () ->
     # convert lines to path
     # give links access to nodes
     d3.selectAll('circle').data().forEach (a) ->
-      return if Math.random() > .99
+      return 
       d3.selectAll('circle').data().forEach (b) ->
         if 250 > dist(a, b) and a != b
           links.push
