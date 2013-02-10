@@ -5,16 +5,20 @@
     var findBirthDate, _parseBirthDate;
     _parseBirthDate = function(data) {
       var birth, birthLoc, categories, n, _i, _len;
-      categories = data.query.pages[Object.keys(data.query.pages)[0]].categories;
       birth = "";
-      for (_i = 0, _len = categories.length; _i < _len; _i++) {
-        n = categories[_i];
-        birthLoc = n.title.indexOf("birth");
-        if (birthLoc !== -1) {
-          birth = n.title.slice(9, birthLoc - 1);
+      if (data.query.pages[Object.keys(data.query.pages)[0]].categories) {
+        categories = data.query.pages[Object.keys(data.query.pages)[0]].categories;
+        for (_i = 0, _len = categories.length; _i < _len; _i++) {
+          n = categories[_i];
+          birthLoc = n.title.indexOf("birth");
+          if (birthLoc !== -1) {
+            birth = n.title.slice(9, birthLoc - 1);
+          }
         }
-      }
-      if (birth === "") {
+        if (birth === "") {
+          birth = "Not a Person";
+        }
+      } else {
         birth = "Not a Person";
       }
       return birth;
@@ -27,7 +31,7 @@
         success: function(data) {
           var birthDate;
           birthDate = _parseBirthDate(data);
-          return callBack(birthDate);
+          return callBack(birthDate, name);
         },
         error: function(error) {
           return callBack(error);

@@ -29,4 +29,4 @@ exports.getPerson = (personName, callBack) ->
   Person.findOne( {name: personName} , callBack )
 
 exports.updatePersonRelations = (name, relations, callBack) ->
-  Person.findOneAndUpdate({name:name }, {relations: relations}, callBack), 
+  Person.findOneAndUpdate({name:name }, {relations: relations}, callBack)

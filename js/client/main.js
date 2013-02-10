@@ -2,7 +2,8 @@
 (function() {
 
   require(["findBirth"], function(findBirth) {
-    var _checkIfLinksArePeople, _getAndSendToDB, _getLinks, _showResult, _storeRelations;
+    var _checkIfLinksArePeople, _getAndSendToDB, _getLinks, _showResult, _storeRelations,
+      _this = this;
     $(document).ready(function() {
       $('.nameInput').on("keyup", function(event) {
         if (event.keyCode === 13) {
@@ -41,8 +42,8 @@
     });
     _storeRelations = function(searchName, validLinks, callBack) {
       var settings;
-      return settings = {
-        url: "/updatePerson/?name=" + searchName + "&relations=validLinks",
+      settings = {
+        url: "/updatePerson/?name=" + searchName + "&relations=" + validLinks,
         success: function() {
           return console.log("Relations Stored");
         },
@@ -50,15 +51,17 @@
           return callBack(err);
         }
       };
+      return $.ajax(settings);
     };
     _checkIfLinksArePeople = function(links, callBack) {
       var link, peopleLinks, _i, _len;
       peopleLinks = [];
       for (_i = 0, _len = links.length; _i < _len; _i++) {
         link = links[_i];
-        findBirth(link, function(birth) {
+        findBirth(link, function(birth, name) {
           if (birth !== "Not a Person") {
-            return peopleLinks.push(link);
+            debugger;
+            return peopleLinks.push(name);
           }
         });
       }
@@ -70,12 +73,13 @@
         url: "http://en.wikipedia.org/w/api.php?" + "format=json&" + "action=query&" + ("titles=" + searchName + "&") + "pllimit=300&" + "prop=links",
         dataType: "jsonp",
         success: function(data) {
-          var allLinks, i, pageId, resultsArray, _i, _ref;
+          var allLinks, i, pageId, resultsArray, _i, _len;
           pageId = Object.keys(data.query.pages);
           allLinks = data.query.pages[pageId].links;
           resultsArray = [];
-          for (i = _i = 0, _ref = allLinks.length; 0 <= _ref ? _i <= _ref : _i >= _ref; i = 0 <= _ref ? ++_i : --_i) {
-            resultsArray.push(data.query.pages[pageId].links[i].title.replace(/\s/g, "_"));
+          for (_i = 0, _len = allLinks.length; _i < _len; _i++) {
+            i = allLinks[_i];
+            resultsArray.push(i.title.replace(/\s/g, "_"));
           }
           return callBack(resultsArray);
         },

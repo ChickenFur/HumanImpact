@@ -14,7 +14,9 @@ require ["findBirth"], (findBirth) ->
           if(data is "Not In DB")
             _getAndSendToDB searchName, () ->
               _getLinks searchName, (links) ->
+                
                 _checkIfLinksArePeople links, (validLinks) ->
+                  
                   _storeRelations searchName, validLinks, (err) ->
                     if err
                       console.log "Error Saving Relations To DB:", err
@@ -25,19 +27,20 @@ require ["findBirth"], (findBirth) ->
   
   _storeRelations = (searchName, validLinks, callBack) ->
     settings = 
-      url : "/updatePerson/?name=#{searchName}&relations=validLinks"
+      url : "/updatePerson/?name=#{searchName}&relations=#{validLinks}"
       success : ()->
         console.log("Relations Stored")
       error : (err) ->
         callBack(err)
-      $.ajax settings
+    $.ajax settings
 
-  _checkIfLinksArePeople = (links, callBack) ->
+  _checkIfLinksArePeople = (links, callBack) =>
     peopleLinks = []
     for link in links
-      findBirth link, (birth) ->
+      findBirth link, (birth, name) => 
         if birth isnt "Not a Person"
-          peopleLinks.push(link)
+          debugger
+          peopleLinks.push(name)
     callBack(peopleLinks)
   
   _getLinks = (searchName, callBack) ->
@@ -53,8 +56,9 @@ require ["findBirth"], (findBirth) ->
         pageId = Object.keys(data.query.pages)
         allLinks = data.query.pages[pageId].links
         resultsArray = []
-        for i in [0..allLinks.length]
-          resultsArray.push( data.query.pages[pageId].links[i].title.replace /\s/g, "_" )
+        for i in allLinks
+          resultsArray.push( i.title.replace /\s/g, "_" )
+        
         callBack(resultsArray)
       error : (err) ->
         console.log "Error with Wikipedia: ", err
