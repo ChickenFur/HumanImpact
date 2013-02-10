@@ -32,6 +32,7 @@ define "graph", () ->
   links = []
   count = 0
   create = (wiki) ->
+    console.log(wiki)
     return if !wiki.relations
     dates = wiki.relations.map (d) ->parseInt(d.dob)
     min = d3.min(dates)
@@ -45,7 +46,6 @@ define "graph", () ->
     count++
     return console.log(wiki) if (! wiki.relations)
     data = wiki.relations.map (data, index) ->
-      console.log(data)
       text: data.name
       count:count
       i: index
@@ -91,7 +91,6 @@ define "graph", () ->
           links.push
             from: a
             to: b
-    console.log(links)
     d3.select('.graph').selectAll('line').data(links)
       .enter().insert('line', '*')
       .attr

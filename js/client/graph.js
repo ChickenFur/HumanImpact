@@ -64,6 +64,7 @@ define("graph", function() {
   count = 0;
   create = function(wiki) {
     var data, dates, h, max, min, nodes, w, xscale;
+    console.log(wiki);
     if (!wiki.relations) {
       return;
     }
@@ -83,7 +84,6 @@ define("graph", function() {
       return console.log(wiki);
     }
     data = wiki.relations.map(function(data, index) {
-      console.log(data);
       return {
         text: data.name,
         count: count,
@@ -142,7 +142,6 @@ define("graph", function() {
         }
       });
     });
-    console.log(links);
     return d3.select('.graph').selectAll('line').data(links).enter().insert('line', '*').attr({
       'stroke-width': 2,
       'stroke-opacity': .01,
