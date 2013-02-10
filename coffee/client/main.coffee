@@ -12,11 +12,8 @@ require ["findBirth", "graph"], (findBirth) ->
             _getDOB searchName, (birth) ->
               dob = birth
               _getLinks searchName, (links) ->
-                
-                _checkIfLinksArePeople links, (validLinks) ->
-                  
-                  _storeRelations searchName, validLinks, dob, (err) ->
-                    debugger;
+                _checkIfLinksArePeople links, (validLinks) ->               
+                  _storeRelations searchName, validLinks, dob, (err) ->                    
                     if err
                       console.log "Error Saving Relations To DB:", err
                  
@@ -48,7 +45,7 @@ require ["findBirth", "graph"], (findBirth) ->
     for link, index in links
       findBirth link, links.length-1, index, (birth, name, total, index) => 
         if birth isnt "Not a Person"
-          peopleLinks.push(name)
+          peopleLinks.push({name:name, dob:birth})
         if index is total
           callBack(peopleLinks)
   
@@ -92,5 +89,7 @@ require ["findBirth", "graph"], (findBirth) ->
     $(".result").append("Name: " + name + "<br>")
     $(".result").append("DOB: "+ dob + "<br>")
     $(".result").append("URL: " + page+ "<br>")
-    $(".result").append("Relations: " + relations + "<br>")
+    $(".result").append("Relations: ")
+    for n in relations
+      $(".result").append( " Name: " + n.name + "DOB: " + n.dob) 
 

@@ -21,7 +21,7 @@
               return _getLinks(searchName, function(links) {
                 return _checkIfLinksArePeople(links, function(validLinks) {
                   return _storeRelations(searchName, validLinks, dob, function(err) {
-                    debugger;                    if (err) {
+                    if (err) {
                       return console.log("Error Saving Relations To DB:", err);
                     }
                   });
@@ -72,7 +72,10 @@
         link = links[index];
         _results.push(findBirth(link, links.length - 1, index, function(birth, name, total, index) {
           if (birth !== "Not a Person") {
-            peopleLinks.push(name);
+            peopleLinks.push({
+              name: name,
+              dob: birth
+            });
           }
           if (index === total) {
             return callBack(peopleLinks);
@@ -109,11 +112,18 @@
       });
     };
     return _showResult = function(name, dob, page, relations) {
+      var n, _i, _len, _results;
       $(".result").html("");
       $(".result").append("Name: " + name + "<br>");
       $(".result").append("DOB: " + dob + "<br>");
       $(".result").append("URL: " + page + "<br>");
-      return $(".result").append("Relations: " + relations + "<br>");
+      $(".result").append("Relations: ");
+      _results = [];
+      for (_i = 0, _len = relations.length; _i < _len; _i++) {
+        n = relations[_i];
+        _results.push($(".result").append(" Name: " + n.name + "DOB: " + n.dob));
+      }
+      return _results;
     };
   });
 
