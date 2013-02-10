@@ -20,7 +20,7 @@ require(["findBirth", "graph"], function(findBirth, graph) {
             return _getLinks(searchName, function(links) {
               return _checkIfLinksArePeople(links, function(validLinks) {
                 return _storeRelations(searchName, validLinks, dob, function(err) {
-                  debugger;                  if (err) {
+                  if (err) {
                     return console.log("Error Saving Relations To DB:", err);
                   }
                 });
@@ -71,7 +71,10 @@ require(["findBirth", "graph"], function(findBirth, graph) {
       link = links[index];
       _results.push(findBirth(link, links.length - 1, index, function(birth, name, total, index) {
         if (birth !== "Not a Person") {
-          peopleLinks.push(name);
+          peopleLinks.push({
+            name: name,
+            dob: birth
+          });
         }
         if (index === total) {
           return callBack(peopleLinks);
@@ -83,7 +86,7 @@ require(["findBirth", "graph"], function(findBirth, graph) {
   _getLinks = function(searchName, callBack) {
     var settings;
     settings = {
-      url: "http://en.wikipedia.org/w/api.php?" + "format=json&" + "action=query&" + ("titles=" + searchName + "&") + "pllimit=300&" + "prop=links",
+      url: "http://en.wikipedia.org/w/api.php?" + "format=json&" + "action=query&" + ("titles=" + searchName + "&") + "pllimit=500&" + "prop=links",
       dataType: "jsonp",
       success: function(data) {
         var allLinks, i, pageId, resultsArray, _i, _len;
@@ -108,10 +111,17 @@ require(["findBirth", "graph"], function(findBirth, graph) {
     });
   };
   return _showResult = function(name, dob, page, relations) {
+    var n, _i, _len, _results;
     $(".result").html("");
     $(".result").append("Name: " + name + "<br>");
     $(".result").append("DOB: " + dob + "<br>");
     $(".result").append("URL: " + page + "<br>");
-    return $(".result").append("Relations: " + relations + "<br>");
+    $(".result").append("Relations: ");
+    _results = [];
+    for (_i = 0, _len = relations.length; _i < _len; _i++) {
+      n = relations[_i];
+      _results.push($(".result").append(" Name: " + n.name + "DOB: " + n.dob));
+    }
+    return _results;
   };
 });

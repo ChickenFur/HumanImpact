@@ -11,7 +11,11 @@ define("findBirth", function() {
         n = categories[_i];
         birthLoc = n.title.indexOf("birth");
         if (birthLoc !== -1) {
-          birth = n.title.slice(9, birthLoc - 1);
+          if (n.title.indexOf("Year of") === -1) {
+            birth = n.title.slice(9, birthLoc - 1);
+          } else {
+            birth = "unknown";
+          }
         }
       }
       if (birth === "") {

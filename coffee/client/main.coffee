@@ -11,11 +11,8 @@ require ["findBirth", "graph"], (findBirth, graph) ->
             _getDOB searchName, (birth) ->
               dob = birth
               _getLinks searchName, (links) ->
-                
-                _checkIfLinksArePeople links, (validLinks) ->
-                  
-                  _storeRelations searchName, validLinks, dob, (err) ->
-                    debugger;
+                _checkIfLinksArePeople links, (validLinks) ->               
+                  _storeRelations searchName, validLinks, dob, (err) ->                    
                     if err
                       console.log "Error Saving Relations To DB:", err
                  
@@ -47,7 +44,7 @@ require ["findBirth", "graph"], (findBirth, graph) ->
     for link, index in links
       findBirth link, links.length-1, index, (birth, name, total, index) => 
         if birth isnt "Not a Person"
-          peopleLinks.push(name)
+          peopleLinks.push({name:name, dob:birth})
         if index is total
           callBack(peopleLinks)
   
@@ -57,7 +54,7 @@ require ["findBirth", "graph"], (findBirth, graph) ->
             "format=json&" +
             "action=query&" +
             "titles=#{searchName}&" +
-            "pllimit=300&" +
+            "pllimit=500&" +
             "prop=links"
       dataType : "jsonp"
       success : (data) ->
@@ -75,15 +72,6 @@ require ["findBirth", "graph"], (findBirth, graph) ->
 
   _getDOB= (name, callBack) ->
     findBirth name, 0, 0, (birth) ->
-      # settings =
-      #   url : "/savePerson/?name=#{name}&dob=#{birth}&relations=[]"
-      #   success : (data) ->
-      #     _showResult(name, birth, "http://en.wikipedia.org/#{name}", "")
-      #     $(".result").append("Added to DB")
-      #     callBack()
-      #   error : (err) ->
-      #     console.log("Error Getting Date")
-      # $.ajax settings
       callBack(birth)
 
   _showResult = (name, dob, page, relations) ->
@@ -91,5 +79,7 @@ require ["findBirth", "graph"], (findBirth, graph) ->
     $(".result").append("Name: " + name + "<br>")
     $(".result").append("DOB: "+ dob + "<br>")
     $(".result").append("URL: " + page+ "<br>")
-    $(".result").append("Relations: " + relations + "<br>")
+    $(".result").append("Relations: ")
+    for n in relations
+      $(".result").append( " Name: " + n.name + "DOB: " + n.dob) 
 
