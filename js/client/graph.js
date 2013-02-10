@@ -28,9 +28,8 @@
       return '#' + (0x1000000 + (Math.random()) * 0xffffff).toString(16).substr(1, 6);
     };
     drag = d3.behavior.drag().on('drag', function() {
-      var dx, dy;
-      dx = d3.event.dx;
-      dy = d3.event.dy;
+      var dx, dy, _ref;
+      _ref = [d3.event.dx, d3.event.dx], dx = _ref[0], dy = _ref[1];
       d3.select(this).attr({
         cx: function(d) {
           return d.x += dx;
@@ -62,12 +61,6 @@
         }
       });
     });
-    dist = function(a, b) {
-      var xd, yd;
-      xd = a.x - b.x;
-      yd = a.y - b.y;
-      return Math.sqrt(xd * xd + yd * yd);
-    };
     links = [];
     count = 0;
     create = function(wiki) {
@@ -141,9 +134,8 @@
         });
       });
       d3.selectAll('circle').data().forEach(function(a) {
-        return;
         return d3.selectAll('circle').data().forEach(function(b) {
-          if (250 > dist(a, b) && a !== b) {
+          if (150 > dist(a, b) && a !== b) {
             return links.push({
               from: a,
               to: b
@@ -181,10 +173,10 @@
       });
     };
     init = function() {
-      var body, brush, grad, graph, svg;
+      var axis, body, brush, date, grad, graph, h, svg, time, w;
       body = d3.select('body');
       svg = body.append('svg');
-      grad = svg.append('linearGradient').attr({
+      grad = svg.append('defs').append('linearGradient').attr({
         id: 'g952',
         gradientUnits: 'userSpaceonUse',
         x1: '0%',
@@ -201,8 +193,8 @@
         }
       });
       graph = svg.append('g').attr('class', 'graph');
-      return brush = svg.append('g').attr('class', 'brush').attr({
-        transform: "translate(0," + (innerHeight * .99) + ")",
+      brush = svg.append('g').attr('class', 'brush').attr({
+        transform: "translate(0," + (innerHeight * .95) + ")",
         stroke: 'blue`',
         fill: 'url(#g952)',
         'stroke-width': '1'
@@ -213,10 +205,18 @@
       }).on('brushend', function() {
         return console.log('end');
       }).selectAll('rect').attr({
+        opacity: 1,
         stroke: '#a5b8da',
         rx: '1.5%',
         height: '5%'
       });
+      date = new Date;
+      date.setYear(2000);
+      time = d3.time.scale().range([0, innerWidth - 50]).domain([date, new Date()]);
+      axis = d3.svg.axis().scale(time).orient('bottom');
+      w = innerWidth;
+      h = innerHeight;
+      return d3.select('svg').append('g').attr('class', 'time').attr('transform', "translate(0, " + (h * .97) + ")").call(axis);
     };
     init();
     return {

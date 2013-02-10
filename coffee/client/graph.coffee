@@ -14,8 +14,7 @@ define "graph", () ->
     '#' + (0x1000000+(Math.random())*0xffffff).toString(16).substr(1,6)
 
   drag = d3.behavior.drag().on 'drag', ->
-    dx = d3.event.dx
-    dy = d3.event.dy
+    [dx, dy] = [d3.event.dx, d3.event.dx]
     d3.select(@).attr
       cx: (d) -> d.x += dx
       cy: (d) -> d.y += dy
@@ -29,10 +28,6 @@ define "graph", () ->
     d3.selectAll('text').attr
       x: (d) -> d.x
       y: (d) -> d.y
-  dist = (a, b) ->
-    xd = a.x - b.x
-    yd = a.y - b.y
-    Math.sqrt(xd * xd + yd * yd)
 
   links = []
   count = 0
@@ -91,9 +86,8 @@ define "graph", () ->
     # convert lines to path
     # give links access to nodes
     d3.selectAll('circle').data().forEach (a) ->
-      return 
       d3.selectAll('circle').data().forEach (b) ->
-        if 250 > dist(a, b) and a != b
+        if 150 > dist(a, b) and a != b
           links.push
             from: a
             to: b
@@ -118,7 +112,7 @@ define "graph", () ->
   init = ->
     body = d3.select('body')
     svg = body.append('svg')
-    grad = svg.append('linearGradient')
+    grad = svg.append('defs').append('linearGradient')
       .attr
         id:'g952'
         gradientUnits: 'userSpaceonUse'
@@ -134,7 +128,7 @@ define "graph", () ->
     graph = svg.append('g').attr('class','graph')
     brush = svg.append('g').attr('class','brush')
       .attr
-        transform: "translate(0,#{innerHeight * .99})"
+        transform: "translate(0,#{innerHeight * .95})"
         stroke: 'blue`'
         fill: 'url(#g952)'
         'stroke-width': '1'
@@ -144,9 +138,27 @@ define "graph", () ->
       .on('brushend', -> console.log 'end')
       .selectAll('rect')
       .attr
+        opacity: 1
         stroke: '#a5b8da'
         rx: '1.5%'
         height: '5%'
+    date = new Date
+    date.setYear(2000)
+    time = d3.time.scale()
+      .range([0, innerWidth - 50])
+      .domain([date, new Date()])
+      
+    axis = d3.svg.axis()
+      .scale(time)
+      .orient('bottom')
+
+    w = innerWidth
+    h = innerHeight
+    d3.select('svg')
+      .append('g')
+      .attr('class', 'time')
+      .attr('transform', "translate(0, #{h * .97})")
+      .call(axis)
 
   # test = "ocean"
   # test && jsonp(test, create)
