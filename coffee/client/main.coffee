@@ -58,7 +58,7 @@ require ["findBirth", "graph"], (findBirth) ->
             "format=json&" +
             "action=query&" +
             "titles=#{searchName}&" +
-            "pllimit=300&" +
+            "pllimit=500&" +
             "prop=links"
       dataType : "jsonp"
       success : (data) ->
