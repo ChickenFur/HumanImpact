@@ -1,9 +1,12 @@
-require ["findBirth", "graph"], (findBirth) ->
+require ["findBirth", "graph"], (findBirth, graph) ->
+  jsonp =  (query, callback) ->
+    window.__cb__ = callback or -> log(arguments)
+    d3.select('head').append('script').attr('src', urls.search(query))
   getPeople = (searchName)->
-    settings = 
+    settings =
         url : "/getPerson/?wikipage=#{searchName}" 
         success : (data)->
-          console.log data
+          graph.create(data)
           dob = ""
           if(data.name)
             _showResult(data.name, data.dob, data.url, data.relations)
