@@ -20,9 +20,9 @@
   });
 
   app.use("/updatePerson", function(req, res) {
-    return mongoDB.updatePersonRelations(req.query['name'], function() {
+    return mongoDB.updatePersonRelations(req.query['name'], req.headers.relations(function() {
       return console.log("Added Relations to db");
-    });
+    }));
   });
 
   app.use('/savePerson', function(req, res) {

@@ -23,7 +23,7 @@
       }
       return birth;
     };
-    return findBirthDate = function(name, callBack) {
+    return findBirthDate = function(name, total, index, callBack) {
       var settings;
       settings = {
         url: "http://en.wikipedia.org/w/api.php?action=query&titles=" + name + "&prop=categories&format=json",
@@ -31,7 +31,7 @@
         success: function(data) {
           var birthDate;
           birthDate = _parseBirthDate(data);
-          return callBack(birthDate, name);
+          return callBack(birthDate, name, total, index);
         },
         error: function(error) {
           return callBack(error);

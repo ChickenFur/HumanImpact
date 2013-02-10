@@ -18,6 +18,7 @@ require ["findBirth"], (findBirth) ->
                 _checkIfLinksArePeople links, (validLinks) ->
                   
                   _storeRelations searchName, validLinks, (err) ->
+                    debugger;
                     if err
                       console.log "Error Saving Relations To DB:", err
                  
@@ -27,7 +28,9 @@ require ["findBirth"], (findBirth) ->
   
   _storeRelations = (searchName, validLinks, callBack) ->
     settings = 
-      url : "/updatePerson/?name=#{searchName}&relations=#{validLinks}"
+      url : "/updatePerson/?name=#{searchName}"
+      headers :
+        relations : validLinks
       success : ()->
         console.log("Relations Stored")
       error : (err) ->
@@ -36,12 +39,13 @@ require ["findBirth"], (findBirth) ->
 
   _checkIfLinksArePeople = (links, callBack) =>
     peopleLinks = []
-    for link in links
-      findBirth link, (birth, name) => 
+    for link, index in links
+      findBirth link, links.length-1, index, (birth, name, total, index) => 
         if birth isnt "Not a Person"
           debugger
           peopleLinks.push(name)
-    callBack(peopleLinks)
+        if index is total
+          callBack(peopleLinks)
   
   _getLinks = (searchName, callBack) ->
     settings = 
@@ -66,7 +70,7 @@ require ["findBirth"], (findBirth) ->
     $.ajax settings
 
   _getAndSendToDB = (name, callBack) ->
-    findBirth name, (birth) ->
+    findBirth name, 0, 0, (birth) ->
       settings =
         url : "/savePerson/?name=#{name}&dob=#{birth}&relations=[]"
         success : (data) ->

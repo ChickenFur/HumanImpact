@@ -24,7 +24,7 @@
                 return _getLinks(searchName, function(links) {
                   return _checkIfLinksArePeople(links, function(validLinks) {
                     return _storeRelations(searchName, validLinks, function(err) {
-                      if (err) {
+                      debugger;                      if (err) {
                         return console.log("Error Saving Relations To DB:", err);
                       }
                     });
@@ -43,7 +43,10 @@
     _storeRelations = function(searchName, validLinks, callBack) {
       var settings;
       settings = {
-        url: "/updatePerson/?name=" + searchName + "&relations=" + validLinks,
+        url: "/updatePerson/?name=" + searchName,
+        headers: {
+          relations: validLinks
+        },
         success: function() {
           return console.log("Relations Stored");
         },
@@ -54,18 +57,22 @@
       return $.ajax(settings);
     };
     _checkIfLinksArePeople = function(links, callBack) {
-      var link, peopleLinks, _i, _len;
+      var index, link, peopleLinks, _i, _len, _results;
       peopleLinks = [];
-      for (_i = 0, _len = links.length; _i < _len; _i++) {
-        link = links[_i];
-        findBirth(link, function(birth, name) {
+      _results = [];
+      for (index = _i = 0, _len = links.length; _i < _len; index = ++_i) {
+        link = links[index];
+        _results.push(findBirth(link, links.length - 1, index, function(birth, name, total, index) {
           if (birth !== "Not a Person") {
             debugger;
-            return peopleLinks.push(name);
+            peopleLinks.push(name);
           }
-        });
+          if (index === total) {
+            return callBack(peopleLinks);
+          }
+        }));
       }
-      return callBack(peopleLinks);
+      return _results;
     };
     _getLinks = function(searchName, callBack) {
       var settings;
@@ -90,7 +97,7 @@
       return $.ajax(settings);
     };
     _getAndSendToDB = function(name, callBack) {
-      return findBirth(name, function(birth) {
+      return findBirth(name, 0, 0, function(birth) {
         var settings;
         settings = {
           url: "/savePerson/?name=" + name + "&dob=" + birth + "&relations=[]",

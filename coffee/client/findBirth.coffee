@@ -13,13 +13,13 @@ define "findBirth", () ->
       birth = "Not a Person"
     birth
 
-  findBirthDate = (name, callBack) ->
+  findBirthDate = (name, total, index, callBack) ->
     settings = 
       url : "http://en.wikipedia.org/w/api.php?action=query&titles=#{name}&prop=categories&format=json"
       dataType : "jsonp"
       success : (data) ->
         birthDate = _parseBirthDate(data)
-        callBack(birthDate, name)    
+        callBack(birthDate, name, total, index)    
       error : (error) ->
         callBack(error)
     $.ajax settings
