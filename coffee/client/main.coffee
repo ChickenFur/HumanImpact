@@ -73,15 +73,6 @@ require ["findBirth", "graph"], (findBirth) ->
 
   _getDOB= (name, callBack) ->
     findBirth name, 0, 0, (birth) ->
-      # settings =
-      #   url : "/savePerson/?name=#{name}&dob=#{birth}&relations=[]"
-      #   success : (data) ->
-      #     _showResult(name, birth, "http://en.wikipedia.org/#{name}", "")
-      #     $(".result").append("Added to DB")
-      #     callBack()
-      #   error : (err) ->
-      #     console.log("Error Getting Date")
-      # $.ajax settings
       callBack(birth)
 
   _showResult = (name, dob, page, relations) ->
