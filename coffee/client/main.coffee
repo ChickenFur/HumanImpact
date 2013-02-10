@@ -1,5 +1,4 @@
 require ["findBirth", "graph"], (findBirth) ->
-  
   getPeople = (searchName)->
     settings = 
         url : "/getPerson/?wikipage=#{searchName}" 
