@@ -13,11 +13,12 @@
     "mongoose": ""},
 
   "devDependencies" : {
-    "mocha" : "*"
+    "mocha" : "*",
+    "chai"  : "*"
   },
 
   "optionalDependencies" :{},
 
-  "scripts": {"test": "mocha test/js/test"}
+  "scripts": {"test": "mocha js/test"}
 }
   
