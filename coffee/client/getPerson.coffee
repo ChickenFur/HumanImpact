@@ -5,7 +5,7 @@ define "getPerson", ["findBirth", "graph"], (findBirth, graph) ->
         success : (data)->
           if(data.name)
             graph.create(data)
-            _showResult(data.name, data.dob, data.url, data.relations)
+            #_showResult(data.name, data.dob, data.url, data.relations)
           if(data is "Not In DB")
             _crawlWikipedia(data, searchName)   
         error : (err)->

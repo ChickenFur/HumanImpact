@@ -11,7 +11,6 @@
         success: function(data) {
           if (data.name) {
             graph.create(data);
-            _showResult(data.name, data.dob, data.url, data.relations);
           }
           if (data === "Not In DB") {
             return _crawlWikipedia(data, searchName);
