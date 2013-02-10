@@ -1,4 +1,20 @@
+fixtures =
+  a: 10
+
+#utils
 log = -> window.debug != false && console.log.apply(console, arguments)
+
+dist = (a, b) ->
+  xd = a.x - b.x
+  yd = a.y - b.y
+  Math.sqrt(xd * xd + yd * yd)
+
+mirror = (f) ->
+  if "function" != typeof f then f = d3.ease.apply(d3, arguments) 
+  (t) -> if t < .5 then f(2 * t) else f(2 - 2 * t) 
+
+rand_c = ->
+  '#' + (0x1000000+(Math.random())*0xffffff).toString(16).substr(1,6)
 
 urls =
   search: (q) ->
@@ -20,13 +36,6 @@ jsonp =  (query, callback) ->
   window.__cb__ = callback or -> log(arguments)
   d3.select('head').append('script').attr('src', urls.search(query))
   
-mirror = (f) ->
-  if "function" != typeof f then f = d3.ease.apply(d3, arguments) 
-  (t) -> if t < .5 then f(2 * t) else f(2 - 2 * t) 
-
-rand_c = ->
-  '#' + (0x1000000+(Math.random())*0xffffff).toString(16).substr(1,6)
-
 drag = d3.behavior.drag().on 'drag', ->
   dx = d3.event.dx
   dy = d3.event.dy
@@ -43,88 +52,88 @@ drag = d3.behavior.drag().on 'drag', ->
   d3.selectAll('text').attr
     x: (d) -> d.x 
     y: (d) -> d.y
-    
-distance = (x1, y1, x2, y2) ->
-  xd = x1 - x2
-  yd = y1 - y2
-  Math.sqrt(xd * xd + yd * yd)
-
-dist = (a, b) ->
-  xd = a.x - b.x
-  yd = a.y - b.y
-  Math.sqrt(xd * xd + yd * yd)
 
 scale = d3.scale.linear()
   .domain([0,9])
-  .range([0,Math.PI * 2])
+  .range([0, Math.PI * 2])
 
 links = []
 count = 0
 create = (wiki) ->
+  return if (d3.selectAll('circle')[0].length > 40) 
   console.log wiki
   h = (window.innerHeight / 2) 
   w = (window.innerWidth / 2)
   count++
   wiki.query.search.forEach (obj, index) ->
-    obj.x = w + 100 * count * Math.cos(scale(index))
-    obj.y = h + 100 * count * Math.sin(scale(index))
+    obj.count = count
+    obj.i = index
+    obj.x = 75 * count * Math.cos(scale(index)) + w
+    obj.y = 75 * count * Math.sin(scale(index)) + h
+    obj.fill = rand_c()
+    obj.r = 25
     x = -> jsonp(obj.title, create)
     setTimeout x, 2000 if index < 1
 
-  nodes = d3.select('svg').selectAll('.node').data(wiki.query.search)
+  nodes = d3.select('.graph').selectAll('.node').data(wiki.query.search)
     .enter().append('circle')
-    .call(drag)
-    .transition()
-    .delay((d, i) -> i * 50)
+    .on('mouseover', -> d3.select(@).attr opacity: 1)
+    .on('mouseout', -> d3.select(@).attr opacity: .5)
     .attr
+      opacity: .5
       cx: (d) -> d.x
       cy: (d) -> d.y
-      fill: rand_c
-      r: 25
+      fill: (d) -> d.fill
+    .call(drag)
+    .transition()
+    .duration(1000)
+    .ease(d3.ease('cubic-in-out'))
+    .delay((d, i) -> i * 50)
+    .attr
+      r: (d) -> d.r
+
   nodes.each (d, i) ->
-    d3.select('svg').append('text').datum(d)
+    return 10;
+    d3.select('.graph').append('text').datum(d)
       .text(d.title)
       .transition()
+      .ease(d3.ease('cubic-in-out'))
       .attr
-        x: (d) -> d.x
-        y: (d) -> d.y
-        fill: rand_c
-        'font-family': 'Deja Vu Sans Mono'
+        x: (d) -> d.x - 5
+        y: (d) -> d.y + 30
+        fill: d.fill
+        'font-family': 'deja vu sans mono'
 
-  q = d3.geom.quadtree(wiki.query.search, innerWidth, innerHeight)
-  i = 0
-  # d3.selectAll('circle').data().forEach (d, i) ->
-  #   q.visit (node, x1, y1, x2, y2) ->
-  #     if 200 > distance(x1, y1, x2, y2) and a != b
-  #       links.push
-  #         from: a
-  #         to: b
-
+  #TODO
+  # convert lines to path
+  # give links access to nodes
   d3.selectAll('circle').data().forEach (a) ->
     d3.selectAll('circle').data().forEach (b) ->
-      if 200 > dist(a, b) and a != b
+      if 250 > dist(a, b) and a != b
         links.push
           from: a
           to: b
       
-  d3.select('svg').selectAll('line').data(links)
+  d3.select('.graph').selectAll('line').data(links)
     .enter().insert('line', '*')
     .attr
       'stroke-width': 2
+      'stroke-opacity': .01
       x1: (d) -> d.from.x
       y1: (d) -> d.from.y
       x2: (d) -> d.from.x
       y2: (d) -> d.from.y
-      stroke: rand_c
+      stroke: (d) -> d.from.fill
     .transition()
     .duration(5000)
-    .ease(d3.ease('poly', 3))
+    .ease(d3.ease('cubic'))
     .attr
+      'stroke-opacity': .3
       x2: (d) -> d.to.x
       y2: (d) -> d.to.y
 
 init = ->
-  body = d3.select('body').style background: '#333'
+  body = d3.select('body')
   body.append('input')
     .attr('type','text')
     .style
@@ -134,16 +143,29 @@ init = ->
       if d3.event.which == 13
         jsonp(d3.event.target.value, create)
         d3.event.target.value = ''
-        
   svg = body.append('svg')
+  graph = svg.append('g').attr('class','graph')
+  brush = svg.append('g').attr('class','brush')
+    .attr
+      transform: "translate(0,#{innerHeight * .8})"
+      stroke: 'pink'
+      fill: 'red'
+      'stroke-width': '10'
+      'stroke-opacity': .3
+      'fill-opacity': .5
+    .call(d3.svg.brush().x(d3.scale.identity().domain([0, innerWidth])))
+    .on('brushstart', -> console.log 'strart')
+    .on('brush', -> console.log 'brush')
+    .on('brushend', -> console.log 'end')
+    .selectAll('rect')
+    .attr
+      rx: 15
+      ry: 15
+      height: '100px'
+
   test = "ocean"
   test && jsonp(test, create)
-
-x = 0
-rotate = ->
-  d3.selectAll('text').attr('rotate', -> x++)
 
 d3.select(window)
   .on('keydown', -> setInterval rotate, 10 if d3.event.which == 27)
   .on('load', init)
-  
