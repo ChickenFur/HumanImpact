@@ -11,6 +11,7 @@
         success: function(data) {
           if (data.name) {
             graph.create(data);
+            $("body").addClass("fadedBackground");
           }
           if (data === "Not In DB") {
             return _crawlWikipedia(data, searchName);

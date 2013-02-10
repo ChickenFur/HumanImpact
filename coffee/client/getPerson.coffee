@@ -4,7 +4,9 @@ define "getPerson", ["findBirth", "graph"], (findBirth, graph) ->
         url : "/getPerson/?wikipage=#{searchName}" 
         success : (data)->
           if(data.name)
+
             graph.create(data)
+            $("body").addClass("fadedBackground")
             #_showResult(data.name, data.dob, data.url, data.relations)
           if(data is "Not In DB")
             _crawlWikipedia(data, searchName)   

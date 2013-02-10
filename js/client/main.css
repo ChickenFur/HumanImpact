@@ -8,6 +8,10 @@ body{
   width: 100%;
 }
 
+.fadedBackground{
+  background-image: url('./css/images/map-light.jpg');
+}
+
 input {
   padding-left: 10px;
 }
