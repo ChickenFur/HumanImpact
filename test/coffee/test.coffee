@@ -1,6 +1,4 @@
 assert = require "assert"
-parser = require "../../js/server/parser"
-sampleData = require "./sampleData"
 
 describe 'Parser', () ->
   describe '.parse()', () -> 
