@@ -19,39 +19,43 @@ rand_c = ->
 urls =
   search: (q) ->
     "http://en.wikipedia.org/w/api.php?" +
-    "action=query&" + 
-    "list=search&" + 
+    "action=query&" +
+    "list=search&" +
     "srprop=links&" +
-    "format=json&" + 
+    "format=json&" +
     "callback=__cb__&" +
     "srsearch=" + q
   relevance: (q) ->
     "action=query&" +
-    "prop=categories&" + 
+    "prop=categories&" +
     "format=json&" +
-    "callback=__cb__&" + 
-    "titles=" + query 
-                  
+    "callback=__cb__&" +
+    "titles=" + query
+
 jsonp =  (query, callback) ->
   window.__cb__ = callback or -> log(arguments)
   d3.select('head').append('script').attr('src', urls.search(query))
-  
+
 drag = d3.behavior.drag().on 'drag', ->
   dx = d3.event.dx
   dy = d3.event.dy
   d3.select(@).attr
     cx: (d) -> d.x += dx
     cy: (d) -> d.y += dy
-    
+
   d3.selectAll('line').attr
-    x1: (d) -> d.from.x 
-    y1: (d) -> d.from.y 
-    x2: (d) -> d.to.x 
+    x1: (d) -> d.from.x
+    y1: (d) -> d.from.y
+    x2: (d) -> d.to.x
     y2: (d) -> d.to.y
-    
+
   d3.selectAll('text').attr
-    x: (d) -> d.x 
+    x: (d) -> d.x
     y: (d) -> d.y
+dist = (a, b) ->
+  xd = a.x - b.x
+  yd = a.y - b.y
+  Math.sqrt(xd * xd + yd * yd)
 
 scale = d3.scale.linear()
   .domain([0,9])
@@ -60,7 +64,7 @@ scale = d3.scale.linear()
 links = []
 count = 0
 create = (wiki) ->
-  return if (d3.selectAll('circle')[0].length > 40) 
+  return if (d3.selectAll('circle')[0].length > 30) 
   console.log wiki
   h = (window.innerHeight / 2) 
   w = (window.innerWidth / 2)
@@ -77,13 +81,17 @@ create = (wiki) ->
 
   nodes = d3.select('.graph').selectAll('.node').data(wiki.query.search)
     .enter().append('circle')
-    .on('mouseover', -> d3.select(@).attr opacity: 1)
-    .on('mouseout', -> d3.select(@).attr opacity: .5)
+    .on('mouseover', ->
+      d3.select(@).attr 'fill-opacity':1, 'stroke-opacity': '.5')
+    .on('mouseout', -> d3.select(@).attr 'fill-opacity':.5, 'stroke-opacity':'1')
     .attr
-      opacity: .5
+      'fill-opacity': .5
       cx: (d) -> d.x
       cy: (d) -> d.y
       fill: (d) -> d.fill
+      stroke: (d) -> d.fill
+      'stroke-width': 2
+      'stroke-opacity': 1
     .call(drag)
     .transition()
     .duration(1000)
@@ -113,7 +121,6 @@ create = (wiki) ->
         links.push
           from: a
           to: b
-      
   d3.select('.graph').selectAll('line').data(links)
     .enter().insert('line', '*')
     .attr
@@ -143,15 +150,37 @@ init = ->
       if d3.event.which == 13
         jsonp(d3.event.target.value, create)
         d3.event.target.value = ''
+
   svg = body.append('svg')
+
+  grad = svg.append('linearGradient')
+    .attr
+      id:'g952'
+      gradientUnits: 'userSpaceonUse'
+      x1: '0%'
+      y1: '0%'
+      x2: '100%'
+      y2: '100%'
+    .selectAll('stop').data(['#fff','#E3A820']).enter().append('stop').attr
+      'stop-color': (d) -> d
+      offset: (d, i) -> i
+  
+  grad.append('stop').attr
+    'stop-color':'#fff'
+    offset: 0
+
+  grad.append('stop').attr
+    'stop-color':'#E3A820'
+    offset: 1
+    
   graph = svg.append('g').attr('class','graph')
   brush = svg.append('g').attr('class','brush')
     .attr
       transform: "translate(0,#{innerHeight * .8})"
-      stroke: 'pink'
+      stroke: 'red'
       fill: 'red'
-      'stroke-width': '10'
-      'stroke-opacity': .3
+      'stroke-width': '6'
+      'stroke-opacity': .6
       'fill-opacity': .5
     .call(d3.svg.brush().x(d3.scale.identity().domain([0, innerWidth])))
     .on('brushstart', -> console.log 'strart')
