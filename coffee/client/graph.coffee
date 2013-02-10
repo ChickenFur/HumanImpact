@@ -1,6 +1,4 @@
 define "graph", () ->
-  console.log(123123)
-  #utils
   log = -> window.debug != false && console.log.apply(console, arguments)
 
   dist = (a, b) ->
@@ -14,22 +12,6 @@ define "graph", () ->
 
   rand_c = ->
     '#' + (0x1000000+(Math.random())*0xffffff).toString(16).substr(1,6)
-
-  urls =
-    search: (q) ->
-      "http://en.wikipedia.org/w/api.php?" +
-      "action=query&" +
-      "list=search&" +
-      "srprop=links&" +
-      "format=json&" +
-      "callback=__cb__&" +
-      "srsearch=" + q
-    relevance: (q) ->
-      "action=query&" +
-      "prop=categories&" +
-      "format=json&" +
-      "callback=__cb__&" +
-      "titles=" + query
 
   jsonp =  (query, callback) ->
     window.__cb__ = callback or -> log(arguments)
@@ -56,41 +38,37 @@ define "graph", () ->
     yd = a.y - b.y
     Math.sqrt(xd * xd + yd * yd)
 
-  scale = d3.scale.linear()
-    .domain([0,9])
-    .range([0, Math.PI * 2])
+  xscale = d3.scale.linear()
+    .domain([-500, 2000])
+    .range([0, 1000])
 
   links = []
   count = 0
   create = (wiki) ->
     return if (d3.selectAll('circle')[0].length > 30) 
-    console.log wiki
     h = (window.innerHeight / 2) 
     w = (window.innerWidth / 2)
     count++
-    wiki.query.search.forEach (obj, index) ->
-      obj.count = count
-      obj.i = index
-      obj.x = 75 * count * Math.cos(scale(index)) + w
-      obj.y = 75 * count * Math.sin(scale(index)) + h
-      obj.fill = rand_c()
-      obj.r = 25
-      x = -> jsonp(obj.title, create)
-      setTimeout x, 2000 if index < 1
+    return console.log(wiki) if (! wiki.relations) 
+    data = wiki.relations.map (data, index) ->
+      text: data.name
+      count:count
+      i: index
+      x: Math.random() * innerHeight
+      y: Math.random() * innerHeight
+      fill: rand_c()
+      r: 15
 
-    nodes = d3.select('.graph').selectAll('.node').data(wiki.query.search)
+    nodes = d3.select('.graph').selectAll('.node').data(data)
       .enter().append('circle')
       .on('mouseover', ->
-        d3.select(@).attr 'fill-opacity':1, 'stroke-opacity': '.5')
-      .on('mouseout', -> d3.select(@).attr 'fill-opacity':.5, 'stroke-opacity':'1')
+        d3.select(@).attr 'fill-opacity':1)
+      .on('mouseout', -> d3.select(@).attr 'fill-opacity':.5)
       .attr
         'fill-opacity': .5
         cx: (d) -> d.x
-        cy: (d) -> d.y
+        cy: (d) -> d.dob
         fill: (d) -> d.fill
-        stroke: (d) -> d.fill
-        'stroke-width': 2
-        'stroke-opacity': 1
       .call(drag)
       .transition()
       .duration(1000)
@@ -98,11 +76,10 @@ define "graph", () ->
       .delay((d, i) -> i * 50)
       .attr
         r: (d) -> d.r
-
     nodes.each (d, i) ->
-      return 10;
+      return 10
       d3.select('.graph').append('text').datum(d)
-        .text(d.title)
+        .text(d.text.replace(/_/g,' '))
         .transition()
         .ease(d3.ease('cubic-in-out'))
         .attr
@@ -115,11 +92,13 @@ define "graph", () ->
     # convert lines to path
     # give links access to nodes
     d3.selectAll('circle').data().forEach (a) ->
+      return if Math.random() > .99
       d3.selectAll('circle').data().forEach (b) ->
         if 250 > dist(a, b) and a != b
           links.push
             from: a
             to: b
+    console.log(links)
     d3.select('.graph').selectAll('line').data(links)
       .enter().insert('line', '*')
       .attr
@@ -137,7 +116,6 @@ define "graph", () ->
         'stroke-opacity': .3
         x2: (d) -> d.to.x
         y2: (d) -> d.to.y
-
   init = ->
     body = d3.select('body')
     svg = body.append('svg')
@@ -145,43 +123,35 @@ define "graph", () ->
       .attr
         id:'g952'
         gradientUnits: 'userSpaceonUse'
-        x1: '0%'
-        y1: '0%'
-        x2: '100%'
-        y2: '100%'
-      .selectAll('stop').data(['#fff','#E3A820']).enter().append('stop').attr
+        x1:'0%'
+        y1:'0%'
+        y2:'100%'
+        x2:'0%'
+        r: '200%'
+      .selectAll('stop').data(['#C7EEFF', '#7089b3'])
+      .enter().append('stop').attr
         'stop-color': (d) -> d
         offset: (d, i) -> i
-    
-    grad.append('stop').attr
-      'stop-color':'#fff'
-      offset: 0
-
-    grad.append('stop').attr
-      'stop-color':'#E3A820'
-      offset: 1
-      
     graph = svg.append('g').attr('class','graph')
     brush = svg.append('g').attr('class','brush')
       .attr
         transform: "translate(0,#{innerHeight * .8})"
-        stroke: 'red'
-        fill: 'red'
-        'stroke-width': '6'
-        'stroke-opacity': .6
-        'fill-opacity': .5
+        stroke: 'blue`'
+        fill: 'url(#g952)'
+        'stroke-width': '1'
       .call(d3.svg.brush().x(d3.scale.identity().domain([0, innerWidth])))
       .on('brushstart', -> console.log 'strart')
       .on('brush', -> console.log 'brush')
       .on('brushend', -> console.log 'end')
       .selectAll('rect')
       .attr
-        rx: 15
-        ry: 15
+        stroke: '#a5b8da'
+        rx: '5%'
         height: '100px'
 
-#    test = "ocean"
-#    test && jsonp(test, create)
-    
-  console.log(12321)
+  # test = "ocean"
+  # test && jsonp(test, create)
   init()
+  return {
+    create: create
+  }
