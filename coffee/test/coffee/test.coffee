@@ -1,7 +1,7 @@
-assert = require "assert"
+var assert = require('chai').assert
 
 describe 'Parser', () ->
   describe '.parse()', () -> 
     it 'should return correctly formatted dates', () -> 
-      assert( 1 is 1)
+      assert.equal(1, 1, "One equals 1")
       #parser.parse(sampleData.hannibal, "Hannibal")
