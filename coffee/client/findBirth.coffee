@@ -26,3 +26,5 @@ define "findBirth", () ->
       error : (error) ->
         callBack(error)
     $.ajax settings
+
+  return { findBirthDate: findBirthDate }

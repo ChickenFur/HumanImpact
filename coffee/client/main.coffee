@@ -1,4 +1,17 @@
-require ["findBirth", "graph"], (findBirth, graph) ->
+require ["findBirth", "graph", "typeAhead"], (findBirth, graph, typeAhead) ->
+
+  $(document).ready () ->
+    typeAhead.attachWikiAutoComplete ".nameInput"
+
+    $('.nameInput').on "keyup", (event) ->
+      if event.keyCode == 13
+        $('.findBirthDate').click()
+
+    $('.findBirthDate').on "click", (event) ->
+      searchName = $(".nameInput").val()
+      getPeople(searchName)
+
+
   jsonp =  (query, callback) ->
     window.__cb__ = callback or -> log(arguments)
     d3.select('head').append('script').attr('src', urls.search(query))
@@ -6,7 +19,7 @@ require ["findBirth", "graph"], (findBirth, graph) ->
     settings =
         url : "/getPerson/?wikipage=#{searchName}" 
         success : (data)->
-          graph.create(data)
+          #graph.create(data)
           dob = ""
           if(data.name)
             _showResult(data.name, data.dob, data.url, data.relations)
@@ -22,14 +35,6 @@ require ["findBirth", "graph"], (findBirth, graph) ->
         error : (err)->
           console.log("Error in Get Person Ajax Request:", err)
       $.ajax settings
-  $(document).ready () ->
-    $('.nameInput').on "keyup", (event) ->
-      if event.keyCode == 13
-        $('.findBirthDate').click()
-
-    $('.findBirthDate').on "click", (event) ->
-      searchName = $(".nameInput").val()
-      getPeople(searchName)
   
   _storeRelations = (searchName, validLinks, dob, callBack) ->
     settings = 
@@ -45,7 +50,7 @@ require ["findBirth", "graph"], (findBirth, graph) ->
   _checkIfLinksArePeople = (links, callBack) =>
     peopleLinks = []
     for link, index in links
-      findBirth link, links.length-1, index, (birth, name, total, index) => 
+      findBirth.findBirthDate link, links.length-1, index, (birth, name, total, index) => 
         if birth isnt "Not a Person"
           peopleLinks.push({name:name, dob:birth})
         if index is total
@@ -74,7 +79,7 @@ require ["findBirth", "graph"], (findBirth, graph) ->
     $.ajax settings
 
   _getDOB= (name, callBack) ->
-    findBirth name, 0, 0, (birth) ->
+    findBirth.findBirthDate name, 0, 0, (birth) ->
       callBack(birth)
 
   _showResult = (name, dob, page, relations) ->
