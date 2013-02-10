@@ -1,4 +1,8 @@
 require ["findBirth", "graph"], (findBirth, graph) ->
+  jsonp =  (query, callback) ->
+    window.__cb__ = callback or -> log(arguments)
+    d3.select('head').append('script').attr('src', urls.search(query))
+
   getPeople = (searchName)->
     settings =
         url : "/getPerson/?wikipage=#{searchName}" 

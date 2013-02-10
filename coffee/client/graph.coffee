@@ -13,10 +13,6 @@ define "graph", () ->
   rand_c = ->
     '#' + (0x1000000+(Math.random())*0xffffff).toString(16).substr(1,6)
 
-  jsonp =  (query, callback) ->
-    window.__cb__ = callback or -> log(arguments)
-    d3.select('head').append('script').attr('src', urls.search(query))
-
   drag = d3.behavior.drag().on 'drag', ->
     dx = d3.event.dx
     dy = d3.event.dy
@@ -41,6 +37,7 @@ define "graph", () ->
   links = []
   count = 0
   create = (wiki) ->
+    return if !wiki.relations
     dates = wiki.relations.map (d) ->parseInt(d.dob)
     min = d3.min(dates)
     max = d3.max(dates)
@@ -130,14 +127,14 @@ define "graph", () ->
         y2:'100%'
         x2:'0%'
         r: '200%'
-      .selectAll('stop').data(['#C7EEFF', '#7089b3'])
+      .selectAll('stop').data(['#a7c8d6', '#7089b3'])
       .enter().append('stop').attr
         'stop-color': (d) -> d
         offset: (d, i) -> i
     graph = svg.append('g').attr('class','graph')
     brush = svg.append('g').attr('class','brush')
       .attr
-        transform: "translate(0,#{innerHeight * .8})"
+        transform: "translate(0,#{innerHeight * .99})"
         stroke: 'blue`'
         fill: 'url(#g952)'
         'stroke-width': '1'
@@ -148,8 +145,8 @@ define "graph", () ->
       .selectAll('rect')
       .attr
         stroke: '#a5b8da'
-        rx: '5%'
-        height: '100px'
+        rx: '1.5%'
+        height: '5%'
 
   # test = "ocean"
   # test && jsonp(test, create)
