@@ -9,15 +9,17 @@ require ["findBirth"], (findBirth) ->
       settings = 
         url : "/getPerson/?wikipage=#{searchName}" 
         success : (data)->
+          dob = ""
           if(data.name)
             _showResult(data.name, data.dob, data.url, data.relations)
           if(data is "Not In DB")
-            _getAndSendToDB searchName, () ->
+            _getDOB searchName, (birth) ->
+              dob = birth
               _getLinks searchName, (links) ->
                 
                 _checkIfLinksArePeople links, (validLinks) ->
                   
-                  _storeRelations searchName, validLinks, (err) ->
+                  _storeRelations searchName, validLinks, dob, (err) ->
                     debugger;
                     if err
                       console.log "Error Saving Relations To DB:", err
@@ -26,9 +28,9 @@ require ["findBirth"], (findBirth) ->
           console.log("Error in Get Person Ajax Request:", err)
       $.ajax settings
   
-  _storeRelations = (searchName, validLinks, callBack) ->
+  _storeRelations = (searchName, validLinks, dob, callBack) ->
     settings = 
-      url : "/updatePerson/?name=#{searchName}"
+      url : "/savePerson/?name=#{searchName}&dob=#{dob}"
       headers :
         relations : JSON.stringify(validLinks)
       success : ()->
@@ -52,7 +54,7 @@ require ["findBirth"], (findBirth) ->
             "format=json&" +
             "action=query&" +
             "titles=#{searchName}&" +
-            "pllimit=20&" +
+            "pllimit=300&" +
             "prop=links"
       dataType : "jsonp"
       success : (data) ->
@@ -68,17 +70,18 @@ require ["findBirth"], (findBirth) ->
 
     $.ajax settings
 
-  _getAndSendToDB = (name, callBack) ->
+  _getDOB= (name, callBack) ->
     findBirth name, 0, 0, (birth) ->
-      settings =
-        url : "/savePerson/?name=#{name}&dob=#{birth}&relations=[]"
-        success : (data) ->
-          _showResult(name, birth, "http://en.wikipedia.org/#{name}", "")
-          $(".result").append("Added to DB")
-          callBack()
-        error : (err) ->
-          console.log("Error Getting Date")
-      $.ajax settings
+      # settings =
+      #   url : "/savePerson/?name=#{name}&dob=#{birth}&relations=[]"
+      #   success : (data) ->
+      #     _showResult(name, birth, "http://en.wikipedia.org/#{name}", "")
+      #     $(".result").append("Added to DB")
+      #     callBack()
+      #   error : (err) ->
+      #     console.log("Error Getting Date")
+      # $.ajax settings
+      callBack(birth)
 
   _showResult = (name, dob, page, relations) ->
     $(".result").html("")

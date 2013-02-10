@@ -29,12 +29,12 @@
   });
 
   app.use('/savePerson', function(req, res) {
-    var newPerson;
+    var newPerson, relations;
     newPerson = {
       name: req.query["name"],
       dob: req.query["dob"],
       url: "http://en.wikipedia.org/" + req.query["name"],
-      relations: req.query["relations"]
+      relations: relations = JSON.parse(req.headers.relations)
     };
     return mongoDB.addPerson(newPerson, function(error) {
       return res.send("stored in DB, error: " + error);

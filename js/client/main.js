@@ -2,7 +2,7 @@
 (function() {
 
   require(["findBirth"], function(findBirth) {
-    var _checkIfLinksArePeople, _getAndSendToDB, _getLinks, _showResult, _storeRelations,
+    var _checkIfLinksArePeople, _getDOB, _getLinks, _showResult, _storeRelations,
       _this = this;
     $(document).ready(function() {
       $('.nameInput').on("keyup", function(event) {
@@ -16,14 +16,17 @@
         settings = {
           url: "/getPerson/?wikipage=" + searchName,
           success: function(data) {
+            var dob;
+            dob = "";
             if (data.name) {
               _showResult(data.name, data.dob, data.url, data.relations);
             }
             if (data === "Not In DB") {
-              return _getAndSendToDB(searchName, function() {
+              return _getDOB(searchName, function(birth) {
+                dob = birth;
                 return _getLinks(searchName, function(links) {
                   return _checkIfLinksArePeople(links, function(validLinks) {
-                    return _storeRelations(searchName, validLinks, function(err) {
+                    return _storeRelations(searchName, validLinks, dob, function(err) {
                       debugger;                      if (err) {
                         return console.log("Error Saving Relations To DB:", err);
                       }
@@ -40,10 +43,10 @@
         return $.ajax(settings);
       });
     });
-    _storeRelations = function(searchName, validLinks, callBack) {
+    _storeRelations = function(searchName, validLinks, dob, callBack) {
       var settings;
       settings = {
-        url: "/updatePerson/?name=" + searchName,
+        url: "/savePerson/?name=" + searchName + "&dob=" + dob,
         headers: {
           relations: JSON.stringify(validLinks)
         },
@@ -76,7 +79,7 @@
     _getLinks = function(searchName, callBack) {
       var settings;
       settings = {
-        url: "http://en.wikipedia.org/w/api.php?" + "format=json&" + "action=query&" + ("titles=" + searchName + "&") + "pllimit=20&" + "prop=links",
+        url: "http://en.wikipedia.org/w/api.php?" + "format=json&" + "action=query&" + ("titles=" + searchName + "&") + "pllimit=300&" + "prop=links",
         dataType: "jsonp",
         success: function(data) {
           var allLinks, i, pageId, resultsArray, _i, _len;
@@ -95,21 +98,9 @@
       };
       return $.ajax(settings);
     };
-    _getAndSendToDB = function(name, callBack) {
+    _getDOB = function(name, callBack) {
       return findBirth(name, 0, 0, function(birth) {
-        var settings;
-        settings = {
-          url: "/savePerson/?name=" + name + "&dob=" + birth + "&relations=[]",
-          success: function(data) {
-            _showResult(name, birth, "http://en.wikipedia.org/" + name, "");
-            $(".result").append("Added to DB");
-            return callBack();
-          },
-          error: function(err) {
-            return console.log("Error Getting Date");
-          }
-        };
-        return $.ajax(settings);
+        return callBack(birth);
       });
     };
     return _showResult = function(name, dob, page, relations) {
