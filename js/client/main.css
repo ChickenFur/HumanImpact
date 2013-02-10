@@ -1,0 +1,43 @@
+body{
+  margin:0px;
+}
+.wrapper {
+  height:100px;
+  background:#F0F0F0;
+  border:1px solid #CCC;
+  width:100%;
+  margin:0px auto;
+}
+.inner {
+  width: 100%;
+  background: #F0F0F0;
+ /* border: 1px solid #CCC;*/
+  height: 50px;
+  margin: 20px auto;
+  padding-left: 75px;
+  padding-top: 15px;
+  top: 0px;
+  position: fixed;
+  opacity: 0.71;
+}
+
+.title {
+  font-family: 'Syncopate', sans-serif;
+  font-size: 2em;
+  padding-bottom: 15px;
+  display: inline;
+}
+
+.nameInput {
+  width: 160px;
+  display: inline;
+  border-radius: 7px;
+  padding-left: 16px;
+}
+
+p {
+  font-family: arial, sans-serif;
+  display: inline;
+  padding-left: 15px;
+}
+
