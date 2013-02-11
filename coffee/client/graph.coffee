@@ -74,6 +74,7 @@ define ['utils'], (utils) ->
 
     nodes = d3.select('.graph').selectAll('.node').data(data)
       .enter().append('circle')
+      .on('click', new_graph or (d)-> console.log(d))
       .on('mouseover', ->
         d3.select(@).attr 'fill-opacity':1)
       .on('mouseout', -> d3.select(@).attr 'fill-opacity':.5)
