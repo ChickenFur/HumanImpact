@@ -9,6 +9,7 @@
       settings = {
         url: "/getPerson/?wikipage=" + searchName,
         success: function(data) {
+          $('#graphContainer').html("");
           if (data.name) {
             require("graph").create(data);
           }

@@ -3,7 +3,7 @@ define "getPerson", ["findBirth", "require", "graph"], (findBirth, require, grap
     settings =
         url : "/getPerson/?wikipage=#{searchName}" 
         success : (data)->
-          #clear old graph
+          $('#graphContainer').html("")
           if(data.name)
             #_showResult(data.name, data.dob, data.url, data.relations)        
             require("graph").create(data)

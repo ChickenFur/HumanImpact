@@ -173,7 +173,7 @@
     };
     init = function() {
       var body, brush, grad, graph, svg;
-      body = d3.select('body');
+      body = d3.select('#graphContainer');
       svg = body.append('svg');
       grad = svg.append('defs').append('linearGradient').attr({
         id: 'g952',

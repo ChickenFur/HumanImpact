@@ -131,7 +131,7 @@ define "graph", ["utils","require", "getPerson"], (utils, getPerson, require) ->
         x2: (d) -> d.to.x
         y2: (d) -> d.to.y
   init = ->
-    body = d3.select('body')
+    body = d3.select('#graphContainer')
     svg = body.append('svg')
     grad = svg.append('defs').append('linearGradient')
       .attr
