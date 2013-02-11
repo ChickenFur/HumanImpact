@@ -28,7 +28,7 @@ define("graph", function() {
   };
   drag = d3.behavior.drag().on('drag', function() {
     var dx, dy, _ref;
-    _ref = [d3.event.dx, d3.event.dx], dx = _ref[0], dy = _ref[1];
+    _ref = [d3.event.dx, d3.event.dy], dx = _ref[0], dy = _ref[1];
     d3.select(this).attr({
       cx: function(d) {
         return d.x += dx;
@@ -63,20 +63,35 @@ define("graph", function() {
   links = [];
   count = 0;
   create = function(wiki) {
-    var data, dates, h, max, min, nodes, w, xscale;
-    console.log(wiki);
-    if (!wiki.relations) {
-      return;
-    }
+    var axis, data, dates, end, h, max, min, nodes, start, time, w, xscale;
+    xscale = d3.scale.pow().domain([parseInt(wiki.dob) - 50, parseInt(wiki.dob) + 50]).range([0, innerWidth]);
+    d3.select('.graph').append('circle').attr({
+      r: 100,
+      fill: 'red',
+      "class": 'main',
+      cy: innerHeight / 2,
+      cx: xscale(wiki.dob)
+    });
+    d3.select('.graph').append('text').text(wiki.name).attr({
+      fill: 'red',
+      x: xscale(wiki.dob),
+      y: innerHeight / 2
+    });
     dates = wiki.relations.map(function(d) {
       return parseInt(d.dob);
     });
     min = d3.min(dates);
     max = d3.max(dates);
-    xscale = d3.scale.pow().domain([1750, 1850]).range([0, innerWidth]);
-    if (d3.selectAll('circle')[0].length > 30) {
-      return;
-    }
+    end = new Date;
+    end.setYear(min);
+    start = new Date;
+    start.setYear(max);
+    console.log(min, max);
+    time = d3.time.scale().range([0, innerWidth - 50]).domain([start, end]);
+    axis = d3.svg.axis().scale(time).orient('bottom').ticks(20);
+    w = innerWidth;
+    h = innerHeight;
+    d3.select('svg').append('g').attr('class', 'time').attr('transform', "translate(0, " + (h * .95) + ")").call(axis);
     h = window.innerHeight / 2;
     w = window.innerWidth / 2;
     count++;
@@ -103,6 +118,7 @@ define("graph", function() {
         'fill-opacity': .5
       });
     }).attr({
+      "class": 'relation',
       'fill-opacity': .5,
       cx: function(d) {
         return d.x;
@@ -120,27 +136,31 @@ define("graph", function() {
         return d.r;
       }
     });
-    d3.selectAll('circle').data().forEach(function(d, i) {
-      return d3.select('.graph').append('text').datum(d).text(d.text).transition().ease(d3.ease('cubic-in-out')).attr({
+    d3.selectAll('.relation').data().forEach(function(d, i) {
+      return d3.select('.graph').append('text').datum(d).text(d.text).transition().delay(500).ease(d3.ease('cubic-in-out')).attr({
         x: function(d) {
           return d.x - 5;
         },
         y: function(d) {
-          return d.y + 30;
+          return d.y + 15;
         },
         fill: d.fill,
         'font-family': 'deja vu sans mono'
       });
     });
-    d3.selectAll('circle').data().forEach(function(a) {
-      return d3.selectAll('circle').data().forEach(function(b) {
-        if (150 > dist(a, b) && a !== b) {
-          return links.push({
-            from: a,
-            to: b
-          });
-        }
-      });
+    d3.selectAll('.relation').data().forEach(function(b) {
+      var a;
+      a = d3.select('.main');
+      a = {
+        x: a.attr('cx'),
+        y: a.attr('cy')
+      };
+      if (150 > dist(a, b)) {
+        return links.push({
+          from: a,
+          to: b
+        });
+      }
     });
     return d3.select('.graph').selectAll('line').data(links).enter().insert('line', '*').attr({
       'stroke-width': 2,
@@ -171,7 +191,7 @@ define("graph", function() {
     });
   };
   init = function() {
-    var axis, body, brush, date, grad, graph, h, svg, time, w;
+    var body, brush, grad, graph, svg;
     body = d3.select('body');
     svg = body.append('svg');
     grad = svg.append('defs').append('linearGradient').attr({
@@ -191,7 +211,7 @@ define("graph", function() {
       }
     });
     graph = svg.append('g').attr('class', 'graph');
-    brush = svg.append('g').attr('class', 'brush').attr({
+    return brush = svg.append('g').attr('class', 'brush').attr({
       transform: "translate(0," + (innerHeight * .95) + ")",
       stroke: 'blue`',
       fill: 'url(#g952)',
@@ -208,13 +228,6 @@ define("graph", function() {
       rx: '1.5%',
       height: '5%'
     });
-    date = new Date;
-    date.setYear(2000);
-    time = d3.time.scale().range([0, innerWidth - 50]).domain([date, new Date()]);
-    axis = d3.svg.axis().scale(time).orient('bottom');
-    w = innerWidth;
-    h = innerHeight;
-    return d3.select('svg').append('g').attr('class', 'time').attr('transform', "translate(0, " + (h * .97) + ")").call(axis);
   };
   init();
   return {

@@ -14,7 +14,7 @@ define "graph", () ->
     '#' + (0x1000000+(Math.random())*0xffffff).toString(16).substr(1,6)
 
   drag = d3.behavior.drag().on 'drag', ->
-    [dx, dy] = [d3.event.dx, d3.event.dx]
+    [dx, dy] = [d3.event.dx, d3.event.dy]
     d3.select(@).attr
       cx: (d) -> d.x += dx
       cy: (d) -> d.y += dy
@@ -32,15 +32,45 @@ define "graph", () ->
   links = []
   count = 0
   create = (wiki) ->
-    console.log(wiki)
-    return if !wiki.relations
-    dates = wiki.relations.map (d) ->parseInt(d.dob)
+    xscale = d3.scale.pow()
+          .domain([parseInt(wiki.dob) - 50, parseInt(wiki.dob) + 50])
+          .range([0, innerWidth])
+        
+    d3.select('.graph').append('circle').attr
+      r: 100
+      fill: 'red'
+      class: 'main'
+      cy: innerHeight / 2
+      cx: xscale(wiki.dob)
+
+    d3.select('.graph').append('text').text(wiki.name).attr
+      fill: 'red'
+      x: xscale(wiki.dob)
+      y: innerHeight / 2 
+    dates = wiki.relations.map (d) -> parseInt(d.dob)
     min = d3.min(dates)
     max = d3.max(dates)
-    xscale = d3.scale.pow()
-      .domain([1750, 1850])
-      .range([0, innerWidth])
-    return if (d3.selectAll('circle')[0].length > 30) 
+    end = new Date
+    end.setYear(min)
+    start = new Date
+    start.setYear(max)
+    console.log min,max
+    time = d3.time.scale()
+      .range([0, innerWidth - 50])
+      .domain([start, end])
+      
+    axis = d3.svg.axis()
+      .scale(time)
+      .orient('bottom')
+      .ticks(20)
+
+    w = innerWidth
+    h = innerHeight
+    d3.select('svg')
+      .append('g')
+      .attr('class', 'time')
+      .attr('transform', "translate(0, #{h * .95})")
+      .call(axis)
     h = (window.innerHeight / 2) 
     w = (window.innerWidth / 2)
     count++
@@ -60,6 +90,7 @@ define "graph", () ->
         d3.select(@).attr 'fill-opacity':1)
       .on('mouseout', -> d3.select(@).attr 'fill-opacity':.5)
       .attr
+        class: 'relation'
         'fill-opacity': .5
         cx: (d) -> d.x
         cy: (d) -> d.y
@@ -71,26 +102,28 @@ define "graph", () ->
       .delay((d, i) -> i * 50)
       .attr
         r: (d) -> d.r
-    d3.selectAll('circle').data().forEach (d, i) ->
+    d3.selectAll('.relation').data().forEach (d, i) ->
       d3.select('.graph').append('text').datum(d)
         .text(d.text)
         .transition()
+        .delay(500)
         .ease(d3.ease('cubic-in-out'))
         .attr
           x: (d) -> d.x - 5
-          y: (d) -> d.y + 30
+          y: (d) -> d.y + 15
           fill: d.fill
           'font-family': 'deja vu sans mono'
 
     #TODO
     # convert lines to path
     # give links access to nodes
-    d3.selectAll('circle').data().forEach (a) ->
-      d3.selectAll('circle').data().forEach (b) ->
-        if 150 > dist(a, b) and a != b
-          links.push
-            from: a
-            to: b
+    d3.selectAll('.relation').data().forEach (b) ->
+      a = d3.select('.main')
+      a = {x: a.attr('cx'), y:a.attr('cy')}
+      if 150 > dist(a, b) 
+        links.push
+          from: a
+          to: b
     d3.select('.graph').selectAll('line').data(links)
       .enter().insert('line', '*')
       .attr
@@ -141,24 +174,6 @@ define "graph", () ->
         stroke: '#a5b8da'
         rx: '1.5%'
         height: '5%'
-    date = new Date
-    date.setYear(2000)
-    time = d3.time.scale()
-      .range([0, innerWidth - 50])
-      .domain([date, new Date()])
-      
-    axis = d3.svg.axis()
-      .scale(time)
-      .orient('bottom')
-
-    w = innerWidth
-    h = innerHeight
-    d3.select('svg')
-      .append('g')
-      .attr('class', 'time')
-      .attr('transform', "translate(0, #{h * .97})")
-      .call(axis)
-
   # test = "ocean"
   # test && jsonp(test, create)
   init()
