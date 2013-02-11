@@ -4,15 +4,12 @@ define "getPerson", ["findBirth", "require", "graph"], (findBirth, require, grap
         url : "/getPerson/?wikipage=#{searchName}" 
         success : (data)->
           $('#graphContainer').html("")
-          if(data.name)
-            #_showResult(data.name, data.dob, data.url, data.relations)        
+          if(data.name)    
             require("graph").create(data)
           if(data is "Not In DB") 
-            _showLoadingButton()  
+            _showLoadingButton  searchName 
             _crawlWikipedia data, searchName, ()->
-              _hideLoadingButton()
-              #_showResult(data.name, data.dob, data.url, data.relations)
-              require("graph").create(data)
+              _loadNewGraph(searchName)
         error : (err)->
           console.log("Error in Get Person Ajax Request:", err)
       $.ajax settings
@@ -79,12 +76,20 @@ define "getPerson", ["findBirth", "require", "graph"], (findBirth, require, grap
     for n in relations
       $(".result").append( " Name: " + n.name + "DOB: " + n.dob) 
 
-  _showLoadingButton = () ->
+  _showLoadingButton = (newName) ->
+    $("#checkWiki").attr("disabled","disabled")
+    $(".nameInput").attr("disabled","disabled")
+    $(".nameInput").css("background-color", "LightGray")
+    $(".nameInput").val newName
     $('.result').html("")
     $("#loadingGif").addClass("showLoading")
 
-  _hideLoadingButton = () ->
+  _loadNewGraph = (newName) ->
     $("#loadingGif").addClass("hideLoading").removeClass("showLoading")
+    $("#checkWiki").attr("disabled",false)
+    $(".nameInput").attr("disabled",false)
+    $(".nameInput").css("background-color", "white")
+    $(".nameInput").val newName
     $('.findBirthDate').click()
 
   return {getPerson: getPerson}

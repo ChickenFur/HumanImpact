@@ -2,7 +2,7 @@
 (function() {
 
   define("getPerson", ["findBirth", "require", "graph"], function(findBirth, require, graph) {
-    var getPerson, _checkIfLinksArePeople, _crawlWikipedia, _getDOB, _getLinks, _hideLoadingButton, _showLoadingButton, _showResult, _storeRelations,
+    var getPerson, _checkIfLinksArePeople, _crawlWikipedia, _getDOB, _getLinks, _loadNewGraph, _showLoadingButton, _showResult, _storeRelations,
       _this = this;
     getPerson = function(searchName) {
       var settings;
@@ -14,10 +14,9 @@
             require("graph").create(data);
           }
           if (data === "Not In DB") {
-            _showLoadingButton();
+            _showLoadingButton(searchName);
             return _crawlWikipedia(data, searchName, function() {
-              _hideLoadingButton();
-              return require("graph").create(data);
+              return _loadNewGraph(searchName);
             });
           }
         },
@@ -122,12 +121,20 @@
       }
       return _results;
     };
-    _showLoadingButton = function() {
+    _showLoadingButton = function(newName) {
+      $("#checkWiki").attr("disabled", "disabled");
+      $(".nameInput").attr("disabled", "disabled");
+      $(".nameInput").css("background-color", "LightGray");
+      $(".nameInput").val(newName);
       $('.result').html("");
       return $("#loadingGif").addClass("showLoading");
     };
-    _hideLoadingButton = function() {
+    _loadNewGraph = function(newName) {
       $("#loadingGif").addClass("hideLoading").removeClass("showLoading");
+      $("#checkWiki").attr("disabled", false);
+      $(".nameInput").attr("disabled", false);
+      $(".nameInput").css("background-color", "white");
+      $(".nameInput").val(newName);
       return $('.findBirthDate').click();
     };
     return {
