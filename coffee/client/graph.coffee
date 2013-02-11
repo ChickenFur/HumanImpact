@@ -1,4 +1,4 @@
-define "graph", ["utils", "getPerson"], (utils, getPerson) ->
+define "graph", ["utils","require", "getPerson"], (utils, getPerson, require) ->
   drag = d3.behavior.drag().on 'drag', ->
     [dx, dy] = [d3.event.dx, d3.event.dy]
     d3.select(@).attr
@@ -74,7 +74,7 @@ define "graph", ["utils", "getPerson"], (utils, getPerson) ->
 
     nodes = d3.select('.graph').selectAll('.node').data(data)
       .enter().append('circle')
-      .on('click', (d)-> getPerson.getPerson(d.text))
+      .on('click', (d)-> require.getPerson(d.text))
       .on('mouseover', ->
         d3.select(@).attr 'fill-opacity':1)
       .on('mouseout', -> d3.select(@).attr 'fill-opacity':.5)

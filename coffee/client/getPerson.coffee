@@ -1,17 +1,18 @@
-define "getPerson", ["findBirth", "graph"], (findBirth, graph) ->  
+define "getPerson", ["findBirth", "require", "graph"], (findBirth, require, graph) ->  
   getPerson = (searchName )->
     settings =
         url : "/getPerson/?wikipage=#{searchName}" 
         success : (data)->
+          #clear old graph
           if(data.name)
-            #_showResult(data.name, data.dob, data.url, data.relations)
-            graph.create(data)
+            #_showResult(data.name, data.dob, data.url, data.relations)        
+            require("graph").create(data)
           if(data is "Not In DB") 
             _showLoadingButton()  
             _crawlWikipedia data, searchName, ()->
               _hideLoadingButton()
               #_showResult(data.name, data.dob, data.url, data.relations)
-              graph.create(data)
+              require("graph").create(data)
         error : (err)->
           console.log("Error in Get Person Ajax Request:", err)
       $.ajax settings
