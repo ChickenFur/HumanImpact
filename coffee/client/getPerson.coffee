@@ -1,20 +1,17 @@
 define "getPerson", ["findBirth", "graph"], (findBirth, graph) ->  
-  getPerson = (searchName)->
+  getPerson = (searchName )->
     settings =
         url : "/getPerson/?wikipage=#{searchName}" 
         success : (data)->
           if(data.name)
-#            _showResult(data.name, data.dob, data.url, data.relations)
-            graph.create(data)
-          if(data is "Not In DB")
-            $('.result').html("")
-            $("#loadingGif").addClass("showLoading")
-            _crawlWikipedia(data, searchName, () ->
-              $("#loadingGif").addClass("hideLoading").removeClass("showLoading")
-              $('.findBirthDate').click()
+            _showResult(data.name, data.dob, data.url, data.relations)
+            # graph.create(data)
+          if(data is "Not In DB") 
+            _showLoadingButton()  
+            _crawlWikipedia data, searchName, ()->
+              _hideLoadingButton()
               _showResult(data.name, data.dob, data.url, data.relations)
-              graph.create(data)
-            )   
+              # graph.create(data)
         error : (err)->
           console.log("Error in Get Person Ajax Request:", err)
       $.ajax settings
@@ -29,7 +26,6 @@ define "getPerson", ["findBirth", "graph"], (findBirth, graph) ->
             if err
               console.log "Error Saving Relations To DB:", err  
             callBack() 
-
   _storeRelations = (searchName, validLinks, dob, callBack) ->
       settings = 
         url : "/savePerson/?name=#{searchName}&dob=#{dob}"
@@ -41,7 +37,6 @@ define "getPerson", ["findBirth", "graph"], (findBirth, graph) ->
         error : (err) ->
           callBack(err)
       $.ajax settings
-
   _checkIfLinksArePeople = (links, callBack) =>
     peopleLinks = []
     for link, index in links
@@ -49,8 +44,7 @@ define "getPerson", ["findBirth", "graph"], (findBirth, graph) ->
         if birth isnt "Not a Person"
           peopleLinks.push({name:name, dob:birth})
         if index is total
-          callBack(peopleLinks)
-  
+          callBack(peopleLinks) 
   _getLinks = (searchName, callBack) ->
     settings = 
       url : "http://en.wikipedia.org/w/api.php?" +
@@ -72,11 +66,9 @@ define "getPerson", ["findBirth", "graph"], (findBirth, graph) ->
         console.log "Error with Wikipedia: ", err
 
     $.ajax settings
-
   _getDOB= (name, callBack) ->
     findBirth.findBirthDate name, 0, 0, (birth) ->
       callBack(birth)
-
   _showResult = (name, dob, page, relations) ->
     $(".result").html("")
     $(".result").append("Name: " + name + "<br>")
@@ -85,5 +77,13 @@ define "getPerson", ["findBirth", "graph"], (findBirth, graph) ->
     $(".result").append("Relations: ")
     for n in relations
       $(".result").append( " Name: " + n.name + "DOB: " + n.dob) 
+
+  _showLoadingButton = () ->
+    $('.result').html("")
+    $("#loadingGif").addClass("showLoading")
+
+  _hideLoadingButton = () ->
+    $("#loadingGif").addClass("hideLoading").removeClass("showLoading")
+    $('.findBirthDate').click()
 
   return {getPerson: getPerson}

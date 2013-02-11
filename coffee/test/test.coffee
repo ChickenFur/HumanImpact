@@ -1,7 +1,10 @@
 assert = require('chai').assert
+requirejs = require('requirejs')
+requirejs.config({nodeRequire: require})
 
-describe 'personModel', () ->
-  describe '.makePerson()', () -> 
-    it 'should return correctly formatted dates', () -> 
-      assert.equal(1, 1, "One equals 1")
-      #parser.parse(sampleData.hannibal, "Hannibal")
+requirejs ['../client/getPerson'], (getPerson) ->
+  describe 'getPerson', () ->
+    describe 'getPerson.getPerson', () -> 
+      getPerson.getPerson "Jesus", ()->
+        console.log "The Test Worked"
+        #parser.parse(sampleData.hannibal, "Hannibal")
