@@ -7,18 +7,18 @@
     "npm":  "1.1.x"
   },
   "dependencies": {
-    "mocha" : "",
     "express" : "3.x",
     "request" : "",
     "mongodb" : "",
     "mongoose": ""},
 
   "devDependencies" : {
-    "mocha" : ""
+    "mocha" : "*",
+    "chai"  : "*"
   },
 
   "optionalDependencies" :{},
 
-  "scripts": {"test": "mocha test/js/test"}
+  "scripts": {"test": "mocha js/test"}
 }
   

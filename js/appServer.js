@@ -9,7 +9,6 @@ app = express();
 
 app.get('/getPerson', function(req, res) {
   return mongoDB.getPerson(req.query['wikipage'], function(err, mongoResults) {
-    console.log("Mongo Results", mongoResults);
     if (mongoResults) {
       return res.send(mongoResults);
     } else {
@@ -21,7 +20,6 @@ app.get('/getPerson', function(req, res) {
 app.use("/updatePerson", function(req, res) {
   var relations;
   relations = JSON.parse(req.headers.relations);
-  console.log(relations);
   return mongoDB.updatePersonRelations(req.query['name'], relations(function() {
     return console.log("Added Relations to db");
   }));
@@ -32,7 +30,7 @@ app.use('/savePerson', function(req, res) {
   newPerson = {
     name: req.query["name"],
     dob: req.query["dob"],
-    url: "http://en.wikipedia.org/" + req.query["name"],
+    url: "http://en.wikipedia.org/wiki/" + req.query["name"],
     relations: relations = JSON.parse(req.headers.relations)
   };
   return mongoDB.addPerson(newPerson, function(error) {
@@ -44,7 +42,6 @@ app.use("/", express["static"](__dirname + '/client'));
 
 app.get('/wikipedia', function(req, res) {
   return personFinder.getAllLinks(req.query['wikipage'], function(err, data) {
-    console.log("Wiki data: " + data);
     return res.send(data);
   });
 });

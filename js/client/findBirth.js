@@ -26,7 +26,7 @@ define("findBirth", function() {
     }
     return birth;
   };
-  return findBirthDate = function(name, total, index, callBack) {
+  findBirthDate = function(name, total, index, callBack) {
     var settings;
     settings = {
       url: "http://en.wikipedia.org/w/api.php?action=query&titles=" + name + "&prop=categories&format=json",
@@ -41,5 +41,8 @@ define("findBirth", function() {
       }
     };
     return $.ajax(settings);
+  };
+  return {
+    findBirthDate: findBirthDate
   };
 });

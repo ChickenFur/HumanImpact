@@ -1,15 +1,26 @@
 <html>
+
 <head>
   <script type="text/javascript" src= "./lib/d3.v3.min.js"></script>
   <script type="text/javascript" src= "./lib/require.js"></script>
   <script type="text/javascript" src ="./lib/jquery-1.9.0.min.js"></script>
-  <script type="text/javascript" src="findBirth.js" ></script>
+  <script type="text/javascript" src= "./lib/jquery-ui-1.10.0.custom.min.js"></script>
   <script type="text/javascript" src="main.js" ></script>
+  <link rel="stylesheet" type="text/css" href="main.css" />
+  <link href='http://fonts.googleapis.com/css?family=Syncopate' rel='stylesheet' type='text/css'>
+  <link rel="stylesheet" type="text/css" href="/css/jquery-ui-1.10.0.custom.min.css">
   
 </head>
+
 <body>
-	<input class="nameInput" value="Napoleon"></input>
-  <button class="findBirthDate">Birth Date</button>
-	<div class="result"></div>
+	<div class="header">
+		<div class="title">Human Impact</div>
+		<p>enter a historical figure to see their connections throughout history</p>
+		<input class="nameInput" placeholder="enter a historical figure" type="title"></input>
+		<button id="checkWiki" class="findBirthDate">click to see relations</button>
+    <div class="result"></div>
+	</div>
+	<div id="loadingGif" class="hideLoading"><img src="/css/images/loading.gif" /></div>
 </body>
+
 </html>
