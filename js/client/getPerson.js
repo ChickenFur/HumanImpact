@@ -9,7 +9,7 @@ define("getPerson", ["findBirth", "graph"], function(findBirth, graph) {
       url: "/getPerson/?wikipage=" + searchName,
       success: function(data) {
         if (data.name) {
-          _showResult(data.name, data.dob, data.url, data.relations);
+          graph.create(data);
         }
         if (data === "Not In DB") {
           $('.result').html("");
@@ -17,7 +17,8 @@ define("getPerson", ["findBirth", "graph"], function(findBirth, graph) {
           return _crawlWikipedia(data, searchName, function() {
             $("#loadingGif").addClass("hideLoading").removeClass("showLoading");
             $('.findBirthDate').click();
-            return _showResult(data.name, data.dob, data.url, data.relations);
+            _showResult(data.name, data.dob, data.url, data.relations);
+            return graph.create(data);
           });
         }
       },

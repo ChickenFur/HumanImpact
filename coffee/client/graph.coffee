@@ -1,18 +1,4 @@
-define "graph", () ->
-  log = -> window.debug != false && console.log.apply(console, arguments)
-
-  dist = (a, b) ->
-    xd = a.x - b.x
-    yd = a.y - b.y
-    Math.sqrt(xd * xd + yd * yd)
-
-  mirror = (f) ->
-    if "function" != typeof f then f = d3.ease.apply(d3, arguments) 
-    (t) -> if t < .5 then f(2 * t) else f(2 - 2 * t) 
-
-  rand_c = ->
-    '#' + (0x1000000+(Math.random())*0xffffff).toString(16).substr(1,6)
-
+define ['utils'], (utils) ->
   drag = d3.behavior.drag().on 'drag', ->
     [dx, dy] = [d3.event.dx, d3.event.dy]
     d3.select(@).attr
@@ -32,13 +18,17 @@ define "graph", () ->
   links = []
   count = 0
   create = (wiki) ->
+    d3.select('svg').remove()
+    init()
     xscale = d3.scale.pow()
           .domain([parseInt(wiki.dob) - 50, parseInt(wiki.dob) + 50])
           .range([0, innerWidth])
         
     d3.select('.graph').append('circle').attr
-      r: 100
-      fill: 'red'
+      r: 25
+      fill: 'none'
+      stroke: 'red'
+      'stroke-width': '10'
       class: 'main'
       cy: innerHeight / 2
       cx: xscale(wiki.dob)
@@ -50,11 +40,13 @@ define "graph", () ->
     dates = wiki.relations.map (d) -> parseInt(d.dob)
     min = d3.min(dates)
     max = d3.max(dates)
-    end = new Date
-    end.setYear(min)
-    start = new Date
-    start.setYear(max)
-    console.log min,max
+    console.log(min, max)
+    start = new Date(min, 0, 1)
+    end = new Date(max, 0, 1)
+    window.min = min
+    window.max = max
+    window.s = start
+    window.e = end
     time = d3.time.scale()
       .range([0, innerWidth - 50])
       .domain([start, end])
@@ -64,15 +56,11 @@ define "graph", () ->
       .orient('bottom')
       .ticks(20)
 
-    w = innerWidth
-    h = innerHeight
     d3.select('svg')
       .append('g')
       .attr('class', 'time')
-      .attr('transform', "translate(0, #{h * .95})")
+      .attr('transform', "translate(0, #{innerHeight * .95})")
       .call(axis)
-    h = (window.innerHeight / 2) 
-    w = (window.innerWidth / 2)
     count++
     return console.log(wiki) if (! wiki.relations)
     data = wiki.relations.map (data, index) ->
@@ -81,7 +69,7 @@ define "graph", () ->
       i: index
       x: xscale(parseInt(data.dob) or 1950)
       y: Math.random() * innerHeight
-      fill: rand_c()
+      fill: utils.rand_c()
       r: 15
 
     nodes = d3.select('.graph').selectAll('.node').data(data)
@@ -119,8 +107,8 @@ define "graph", () ->
     # give links access to nodes
     d3.selectAll('.relation').data().forEach (b) ->
       a = d3.select('.main')
-      a = {x: a.attr('cx'), y:a.attr('cy')}
-      if 150 > dist(a, b) 
+      a = {x: a.attr('cx'), y: a.attr('cy')}
+      if 150 > utils.dist(a, b) 
         links.push
           from: a
           to: b
@@ -174,9 +162,7 @@ define "graph", () ->
         stroke: '#a5b8da'
         rx: '1.5%'
         height: '5%'
-  # test = "ocean"
-  # test && jsonp(test, create)
-  init()
+
   return {
     create: create
   }
