@@ -31,7 +31,7 @@
     newPerson = {
       name: req.query["name"],
       dob: req.query["dob"],
-      url: "http://en.wikipedia.org/" + req.query["name"],
+      url: "http://en.wikipedia.org/wiki/" + req.query["name"],
       relations: relations = JSON.parse(req.headers.relations)
     };
     return mongoDB.addPerson(newPerson, function(error) {
