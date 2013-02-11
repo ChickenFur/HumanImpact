@@ -10,13 +10,13 @@
         url: "/getPerson/?wikipage=" + searchName,
         success: function(data) {
           if (data.name) {
-            _showResult(data.name, data.dob, data.url, data.relations);
+            graph.create(data);
           }
           if (data === "Not In DB") {
             _showLoadingButton();
             return _crawlWikipedia(data, searchName, function() {
               _hideLoadingButton();
-              return _showResult(data.name, data.dob, data.url, data.relations);
+              return graph.create(data);
             });
           }
         },

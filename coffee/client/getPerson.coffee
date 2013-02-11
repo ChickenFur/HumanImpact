@@ -4,14 +4,14 @@ define "getPerson", ["findBirth", "graph"], (findBirth, graph) ->
         url : "/getPerson/?wikipage=#{searchName}" 
         success : (data)->
           if(data.name)
-            _showResult(data.name, data.dob, data.url, data.relations)
-            # graph.create(data)
+            #_showResult(data.name, data.dob, data.url, data.relations)
+            graph.create(data)
           if(data is "Not In DB") 
             _showLoadingButton()  
             _crawlWikipedia data, searchName, ()->
               _hideLoadingButton()
-              _showResult(data.name, data.dob, data.url, data.relations)
-              # graph.create(data)
+              #_showResult(data.name, data.dob, data.url, data.relations)
+              graph.create(data)
         error : (err)->
           console.log("Error in Get Person Ajax Request:", err)
       $.ajax settings
