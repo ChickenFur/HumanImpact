@@ -1,71 +1,66 @@
+
 define "graph", ["utils","require", "getPerson"], (utils, getPerson, require) ->
+
   drag = d3.behavior.drag().on 'drag', ->
-    [dx, dy] = [d3.event.dx, d3.event.dy]
+    dx = d3.event.dx
+    dy = d3.event.dy
     d3.select(@).attr
       cx: (d) -> d.x += dx
       cy: (d) -> d.y += dy
 
-    d3.selectAll('line').attr
+    d3.selectAll('.link').attr
       x1: (d) -> d.from.x
       y1: (d) -> d.from.y
       x2: (d) -> d.to.x
       y2: (d) -> d.to.y
 
-    d3.selectAll('text').attr
+    d3.selectAll('.name').attr
       x: (d) -> d.x
       y: (d) -> d.y
-
+      
   links = []
-  count = 0
   create = (wiki) ->
-    d3.select('svg').remove()
     init()
     xscale = d3.scale.pow()
-          .domain([parseInt(wiki.dob) - 50, parseInt(wiki.dob) + 50])
-          .range([0, innerWidth])
+      .domain([parseInt(wiki.dob) - 50, parseInt(wiki.dob) + 50])
+      .range([0, innerWidth])
         
     d3.select('.graph').append('circle').attr
-      r: 25
-      fill: 'none'
-      stroke: 'red'
-      'stroke-width': '10'
+      r: 50
+      fill: 'url(#ocean_fill)'
       class: 'main'
       cy: innerHeight / 2
       cx: xscale(wiki.dob)
-
+      
+    d3.select('.graph').append('circle').attr
+      r: 50
+      fill: 'url(#globe_highlight)'
+      class: 'main'
+      cy: innerHeight / 2
+      cx: xscale(wiki.dob)
+      
     d3.select('.graph').append('text').text(wiki.name).attr
       fill: 'red'
       x: xscale(wiki.dob)
-      y: innerHeight / 2 
+      y: innerHeight / 2
+      
     dates = wiki.relations.map (d) -> parseInt(d.dob)
     min = d3.min(dates)
     max = d3.max(dates)
-    console.log(min, max)
     start = new Date(min, 0, 1)
     end = new Date(max, 0, 1)
-    window.min = min
-    window.max = max
-    window.s = start
-    window.e = end
     time = d3.time.scale()
-      .range([0, innerWidth - 50])
+      .range([0, innerWidth])
       .domain([start, end])
       
     axis = d3.svg.axis()
       .scale(time)
       .orient('bottom')
-      .ticks(20)
+      .ticks(10)
 
-    d3.select('svg')
-      .append('g')
-      .attr('class', 'time')
-      .attr('transform', "translate(0, #{innerHeight * .95})")
-      .call(axis)
-    count++
-    return console.log(wiki) if (! wiki.relations)
+    d3.select('.time').call(axis)
     data = wiki.relations.map (data, index) ->
       text: data.name
-      count:count
       i: index
       x: xscale(parseInt(data.dob) or 1950)
       y: Math.random() * innerHeight
@@ -91,13 +86,16 @@ define "graph", ["utils","require", "getPerson"], (utils, getPerson, require) ->
       .delay((d, i) -> i * 50)
       .attr
         r: (d) -> d.r
-    d3.selectAll('.relation').data().forEach (d, i) ->
+        
+    d3.selectAll('.relation').each (d, i) ->
       d3.select('.graph').append('text').datum(d)
         .text(d.text)
         .transition()
-        .delay(500)
+        .duration(1000)
+        .delay(i * 50)
         .ease(d3.ease('cubic-in-out'))
         .attr
+          class: 'name'
           x: (d) -> d.x - 5
           y: (d) -> d.y + 15
           fill: d.fill
@@ -109,20 +107,22 @@ define "graph", ["utils","require", "getPerson"], (utils, getPerson, require) ->
     d3.selectAll('.relation').data().forEach (b) ->
       a = d3.select('.main')
       a = {x: a.attr('cx'), y: a.attr('cy')}
-      if 150 > utils.dist(a, b) 
+      if 450 > utils.dist(a, b)
         links.push
           from: a
           to: b
-    d3.select('.graph').selectAll('line').data(links)
+
+    d3.select('.graph').selectAll('.link').data(links)
       .enter().insert('line', '*')
       .attr
         'stroke-width': 2
         'stroke-opacity': .01
+        class: 'link'
         x1: (d) -> d.from.x
         y1: (d) -> d.from.y
         x2: (d) -> d.from.x
         y2: (d) -> d.from.y
-        stroke: (d) -> d.from.fill
+        stroke: (d) -> d.to.fill
       .transition()
       .duration(5000)
       .ease(d3.ease('cubic'))
@@ -130,6 +130,7 @@ define "graph", ["utils","require", "getPerson"], (utils, getPerson, require) ->
         'stroke-opacity': .3
         x2: (d) -> d.to.x
         y2: (d) -> d.to.y
+
   init = ->
     body = d3.select('#graphContainer')
     svg = body.append('svg')
