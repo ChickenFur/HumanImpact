@@ -18,10 +18,12 @@ How to run it:
 
   On the computer running the serve set up the following environment variables.
 
+  ```
   PORT
   mongoDBURL
   mongoPWD
   mongoUser
+  ```
 
   Then download the source
 
@@ -44,3 +46,9 @@ See it running live:
 -------------------------------
 
   http://HI.whitepinedev.com
+
+Created By
+-------------------------------
+  Adnan Wahab, Megan Tulac and Christen Thompson
+
+MIT LICENSE
