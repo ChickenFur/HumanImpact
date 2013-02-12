@@ -1,3 +1,8 @@
+text {
+pointer-events: none;
+}
+
+
 body{
   margin:0px;
   background-image: url('./css/images/map.jpg');

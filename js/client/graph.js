@@ -90,7 +90,7 @@ define("graph", ["brush", "utils", "require", "getPerson", "initialize_svg"], fu
   };
   xscale = d3.time.scale().range([15, innerWidth - 25]);
   create = function(wiki) {
-    var axis, data, diff, k, links, max, min, nodes, rel, rel_dates, tr, year;
+    var axis, data, diff, from, k, links, max, min, nodes, rel, rel_dates, tr, year;
     links = [];
     init();
     year = d3.time.format("%Y").parse;
@@ -110,19 +110,22 @@ define("graph", ["brush", "utils", "require", "getPerson", "initialize_svg"], fu
       xscale.domain(b.empty() ? k : b.extent());
       return update(tr);
     });
-    d3.select('.graph').append('circle').attr({
-      r: 50,
-      fill: 'url(#ocean_fill)',
-      "class": 'main',
-      cy: innerHeight / 2,
-      cx: tr(wiki.dob)
-    });
-    d3.select('.graph').append('circle').attr({
-      r: 50,
-      fill: 'url(#globe_highlight)',
-      "class": 'main',
-      cy: innerHeight / 2,
-      cx: tr(wiki.dob)
+    wiki.x = tr(wiki.dob);
+    wiki.y = innerHeight / 2;
+    wiki.links = [];
+    'ocean_fill globe_highlight globe_shading'.split(' ').forEach(function(d) {
+      return d3.select('.graph').datum(wiki).append('circle').attr({
+        fill: "url(#" + d + ")",
+        "class": 'main',
+        cx: function(d) {
+          return d.x;
+        },
+        cy: function(d) {
+          return d.y;
+        }
+      }).transition().attr({
+        r: 50
+      });
     });
     d3.select('.graph').append('text').text(wiki.name).attr({
       fill: 'red',
@@ -130,27 +133,51 @@ define("graph", ["brush", "utils", "require", "getPerson", "initialize_svg"], fu
       y: innerHeight / 2
     });
     axis = d3.svg.axis().scale(xscale).orient('bottom').ticks(10);
-    d3.select('.time').call(axis);
+    d3.select('.time').attr('fill', '#333').call(axis);
     data = rel.map(function(data, index) {
       return {
         text: data.name,
         i: index,
         dob: data.dob,
         x: tr(data.dob),
-        y: Math.random() * innerHeight,
+        y: Math.random() * (innerHeight * .9) + 50,
         fill: utils.rand_c(),
-        r: 15
+        r: 15,
+        links: []
       };
     });
     nodes = d3.select('.graph').selectAll('.node').data(data).enter().append('circle').on('click', function(d) {
       return require.getPerson(d.text);
-    }).on('mouseover', function() {
-      return d3.select(this).attr({
-        'fill-opacity': 1
+    }).on('mouseover', function(d) {
+      console.log(d);
+      d3.select(d.link).attr({
+        'stroke-opacity': 1,
+        'stroke-width': 1
       });
-    }).on('mouseout', function() {
-      return d3.select(this).attr({
-        'fill-opacity': .5
+      d3.select(d.title[0][0]).attr({
+        opacity: 1,
+        'font-size': '1.5em',
+        'fill': '#333'
+      });
+      return d3.select(this).transition().duration(4).attr({
+        'fill-opacity': 1,
+        'r': 25
+      });
+    }).on('mouseout', function(d) {
+      d3.select(d.link).transition().attr({
+        'stroke-opacity': .1,
+        'stroke-width': 1
+      });
+      d3.select(d.title[0][0]).attr({
+        'opacity': .7,
+        'font-size': '.7em',
+        'fill': function(d) {
+          return d.fill;
+        }
+      });
+      return d3.select(this).transition().duration(15).attr({
+        'fill-opacity': .5,
+        'r': 15
       });
     }).attr({
       "class": 'relation',
@@ -172,42 +199,32 @@ define("graph", ["brush", "utils", "require", "getPerson", "initialize_svg"], fu
       }
     });
     d3.selectAll('.relation').each(function(d, i) {
-      return d3.select('.graph').append('text').datum(d).text(d.text).on('mouseover', function() {
-        return d3.select(this).transition().attr({
-          'font-size': '1.5em'
-        });
-      }).on('mouseout', function() {
-        return d3.select(this).transition().attr({
-          'font-size': '.7em'
-        });
-      }).transition().duration(1000).delay(i * 50).ease(d3.ease('cubic-in-out')).attr({
+      return d.title = d3.select('.graph').append('text').datum(d).attr('opacity', .7).text(d.text).transition().duration(1000).delay(i * 50).ease(d3.ease('cubic-in-out')).attr({
         'font-size': '.7em',
         "class": 'name',
         x: function(d) {
-          return d.x - 5;
+          return d.x - 15;
         },
         y: function(d) {
-          return d.y + 15;
+          return d.y + 20;
         },
         fill: d.fill,
         'font-family': 'deja vu sans mono'
       });
     });
-    d3.selectAll('.relation').data().forEach(function(b) {
-      var a;
-      a = d3.select('.main');
-      a = {
-        x: a.attr('cx'),
-        y: a.attr('cy')
-      };
-      if (450 > utils.dist(a, b)) {
-        return links.push({
-          from: a,
-          to: b
+    from = d3.select('.main').datum();
+    d3.selectAll('.relation').each(function(d, i) {
+      if (450 > utils.dist(from, d)) {
+        return from.links.push({
+          from: from,
+          to: d,
+          link: this
         });
       }
     });
-    return d3.select('.graph').selectAll('.link').data(links).enter().insert('line', '*').attr({
+    return d3.select('.graph').selectAll('.link').data(from.links).enter().insert('line', '*').each(function(d) {
+      return d.to.link = this;
+    }).attr({
       'stroke-width': 2,
       'stroke-opacity': .01,
       "class": 'link',
@@ -227,7 +244,7 @@ define("graph", ["brush", "utils", "require", "getPerson", "initialize_svg"], fu
         return d.to.fill;
       }
     }).transition().duration(5000).ease(d3.ease('cubic')).attr({
-      'stroke-opacity': .3,
+      'stroke-opacity': .1,
       x2: function(d) {
         return d.to.x;
       },

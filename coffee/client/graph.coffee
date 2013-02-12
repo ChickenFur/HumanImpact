@@ -2,6 +2,8 @@
 # convert links to datajoin
 # give node.datum access to links
 # make node.onclick integrate with current graph
+# use voronoi to highlight closest node
+# make main node use same code as relations 
 define "graph", ["brush", "utils","require", "getPerson", "initialize_svg"], (brush,  utils, getPerson, require, init) ->
   drag = d3.behavior.drag().on 'drag', ->
     dx = d3.event.dx
@@ -67,21 +69,17 @@ define "graph", ["brush", "utils","require", "getPerson", "initialize_svg"], (br
     brush xscale.copy(), (b) ->
       xscale.domain(if b.empty() then k  else  b.extent())
       update(tr)
+    wiki.x = tr(wiki.dob)
+    wiki.y = innerHeight / 2
+    wiki.links = []
     
-    d3.select('.graph')
-    .append('circle').attr
-      r: 50
-      fill: 'url(#ocean_fill)'
-      class: 'main'
-      cy: innerHeight / 2
-      cx: tr(wiki.dob)
-      
-    d3.select('.graph').append('circle').attr
-      r: 50
-      fill: 'url(#globe_highlight)'
-      class: 'main'
-      cy: innerHeight / 2
-      cx: tr(wiki.dob)
+    'ocean_fill globe_highlight globe_shading'.split(' ').forEach (d) ->
+      d3.select('.graph').datum(wiki).append('circle').attr
+        fill: "url(##{d})"
+        class: 'main'
+        cx: (d) -> d.x
+        cy: (d) -> d.y
+      .transition().attr r: 50
       
     d3.select('.graph').append('text').text(wiki.name).attr
       fill: 'red'
@@ -93,22 +91,47 @@ define "graph", ["brush", "utils","require", "getPerson", "initialize_svg"], (br
       .orient('bottom')
       .ticks(10)
 
-    d3.select('.time').call(axis)
+    d3.select('.time')
+    .attr('fill','#333')
+    .call(axis)
     data = rel.map (data, index) ->
       text: data.name
       i: index
       dob: data.dob
       x: tr(data.dob)
-      y: Math.random() * innerHeight
+      y: Math.random() * (innerHeight * .9) + 50
       fill: utils.rand_c()
       r: 15
+      links: []
       
     nodes = d3.select('.graph').selectAll('.node').data(data)
       .enter().append('circle')
       .on('click', (d)-> require.getPerson(d.text))
-      .on('mouseover', ->
-        d3.select(@).attr 'fill-opacity':1)
-      .on('mouseout', -> d3.select(@).attr 'fill-opacity':.5)
+      .on('mouseover', (d) ->
+        console.log(d)
+        d3.select(d.link).attr
+          'stroke-opacity': 1
+          'stroke-width': 1
+        d3.select(d.title[0][0]).attr
+          opacity: 1
+          'font-size': '1.5em'
+          'fill': '#333'
+        d3.select(@).transition().duration(4).attr
+          'fill-opacity':1
+          'r': 25
+        )
+      .on('mouseout', (d) ->
+        d3.select(d.link).transition().attr
+          'stroke-opacity': .1
+          'stroke-width': 1
+        d3.select(d.title[0][0]).attr
+          'opacity': .7
+          'font-size': '.7em'
+          'fill': (d) -> d.fill
+        d3.select(@).transition().duration(15).attr
+          'fill-opacity':.5
+          'r':15
+        )
       .attr
         class: 'relation'
         'fill-opacity': .5
@@ -124,12 +147,10 @@ define "graph", ["brush", "utils","require", "getPerson", "initialize_svg"], (br
         r: (d) -> d.r
         
     d3.selectAll('.relation').each (d, i) ->
+      d.title = 
       d3.select('.graph').append('text').datum(d)
+        .attr('opacity', .7)
         .text(d.text)
-        .on 'mouseover', ->
-          d3.select(@).transition().attr('font-size': '1.5em')
-        .on 'mouseout', ->
-          d3.select(@).transition().attr('font-size': '.7em')
         .transition()
         .duration(1000)
         .delay(i * 50)
@@ -137,22 +158,22 @@ define "graph", ["brush", "utils","require", "getPerson", "initialize_svg"], (br
         .attr
           'font-size': '.7em'
           class: 'name'
-          x: (d) -> d.x - 5
-          y: (d) -> d.y + 15
+          x: (d) -> d.x - 15
+          y: (d) -> d.y + 20
           fill: d.fill
           'font-family': 'deja vu sans mono'
 
-          
-    d3.selectAll('.relation').data().forEach (b) ->
-      a = d3.select('.main')
-      a = {x: a.attr('cx'), y: a.attr('cy')}
-      if 450 > utils.dist(a, b)
-        links.push
-          from: a
-          to: b
+    from = d3.select('.main').datum()
+    d3.selectAll('.relation').each (d, i) ->
+      if 450 > utils.dist(from, d)
+        from.links.push
+          from: from
+          to: d
+          link: @
 
-    d3.select('.graph').selectAll('.link').data(links)
+    d3.select('.graph').selectAll('.link').data(from.links)
       .enter().insert('line', '*')
+      .each((d) -> d.to.link = @)
       .attr
         'stroke-width': 2
         'stroke-opacity': .01
@@ -166,7 +187,7 @@ define "graph", ["brush", "utils","require", "getPerson", "initialize_svg"], (br
       .duration(5000)
       .ease(d3.ease('cubic'))
       .attr
-        'stroke-opacity': .3
+        'stroke-opacity': .1
         x2: (d) -> d.to.x
         y2: (d) -> d.to.y
 
