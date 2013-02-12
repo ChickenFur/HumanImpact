@@ -1,3 +1,7 @@
+#todo
+# convert links to datajoin
+# give node.datum access to links
+# make node.onclick integrate with current graph
 define "graph", ["brush", "utils","require", "getPerson", "initialize_svg"], (brush,  utils, getPerson, require, init) ->
   drag = d3.behavior.drag().on 'drag', ->
     dx = d3.event.dx
@@ -122,17 +126,23 @@ define "graph", ["brush", "utils","require", "getPerson", "initialize_svg"], (br
     d3.selectAll('.relation').each (d, i) ->
       d3.select('.graph').append('text').datum(d)
         .text(d.text)
+        .on 'mouseover', ->
+          d3.select(@).transition().attr('font-size': '1.5em')
+        .on 'mouseout', ->
+          d3.select(@).transition().attr('font-size': '.7em')
         .transition()
         .duration(1000)
         .delay(i * 50)
         .ease(d3.ease('cubic-in-out'))
         .attr
+          'font-size': '.7em'
           class: 'name'
           x: (d) -> d.x - 5
           y: (d) -> d.y + 15
           fill: d.fill
           'font-family': 'deja vu sans mono'
 
+          
     d3.selectAll('.relation').data().forEach (b) ->
       a = d3.select('.main')
       a = {x: a.attr('cx'), y: a.attr('cy')}
