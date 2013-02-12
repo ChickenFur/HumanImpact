@@ -11,6 +11,7 @@
       });
       $('.findBirthDate').on("click", function(event) {
         var searchName;
+        $("body").addClass("hideBackGround");
         searchName = $(".nameInput").val();
         return getPerson.getPerson(searchName);
       });

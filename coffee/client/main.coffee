@@ -8,6 +8,7 @@ require ["findBirth", "graph", "typeAhead", "getPerson"], (findBirth, graph, typ
         $('.findBirthDate').click()
 
     $('.findBirthDate').on "click", (event) ->
+      $("body").addClass("hideBackGround")
       searchName = $(".nameInput").val()
       getPerson.getPerson(searchName)
 

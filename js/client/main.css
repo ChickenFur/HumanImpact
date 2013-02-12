@@ -1,11 +1,14 @@
 body{
   margin:0px;
-/*  background-image: url('./css/images/map.jpg');
+  background-image: url('./css/images/map.jpg');
   background-repeat: no-repeat;
   background-position: center center;
-  background-size: cover;*/
+  background-size: cover;
   height: 100%;
   width: 100%;
+}
+.hideBackGround{
+  background-image: url('');
 }
 
 .showLoading {
