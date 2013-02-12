@@ -79,7 +79,9 @@ define "graph", ["brush", "utils","require", "getPerson", "initialize_svg"], (br
         class: 'main'
         cx: (d) -> d.x
         cy: (d) -> d.y
-      .transition().attr r: 50
+      .transition().duration(2500)
+      .ease(d3.ease('bounce'))
+      .attr r: 50
       
     d3.select('.graph').append('text').text(wiki.name).attr
       fill: 'red'

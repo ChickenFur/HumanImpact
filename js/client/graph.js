@@ -123,7 +123,7 @@ define("graph", ["brush", "utils", "require", "getPerson", "initialize_svg"], fu
         cy: function(d) {
           return d.y;
         }
-      }).transition().attr({
+      }).transition().duration(2500).ease(d3.ease('bounce')).attr({
         r: 50
       });
     });
