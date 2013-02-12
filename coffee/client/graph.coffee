@@ -1,4 +1,10 @@
-define ['utils', 'initialize_svg'], (utils, init) ->
+#TODO
+# give nodes access to links
+# increase link delay
+# add links of links
+# increase readability
+# bug where domain gets stuck...
+define ['utils', 'initialize_svg', 'brush'], (utils, init, brush) ->
   drag = d3.behavior.drag().on 'drag', ->
     dx = d3.event.dx
     dy = d3.event.dy
@@ -16,43 +22,74 @@ define ['utils', 'initialize_svg'], (utils, init) ->
       x: (d) -> d.x
       y: (d) -> d.y
       
+  update = (scale)->
+    nodes = d3.selectAll('.relation')
+      .transition()
+      .duration(1000)
+      .ease(d3.ease('cubic-in-out'))
+      .attr
+        cx: (d) -> d.x = scale(d.dob)
+        
+    d3.selectAll('.link').attr
+      x1: (d) -> d.from.x
+      y1: (d) -> d.from.y
+      x2: (d) -> d.to.x
+      y2: (d) -> d.to.y
+
+    d3.selectAll('.name').attr
+      x: (d) -> d.x
+      y: (d) -> d.y
+  
+  chop = (relations, center) ->
+    dist = (i)-> Math.abs(parseInt(center) - i) + Math.random()
+    for d in relations
+      d.dob = '' + if d.dob.match(/bc/i) then -1 else +1 * parseInt(d.dob)
+    relations.length > 100 &&
+      relations.filter((d) -> +d.dob)
+      .sort((a,b) -> dist(a.dob) - dist(b.dob))
+      .filter((d, i) -> i < relations.length * .7 || 1990 < +d.dob) || relations
+        
   links = []
+  xscale = d3.time.scale()
+    .range([15, innerWidth-25])
   create = (wiki) ->
     init()
-    xscale = d3.scale.pow()
-      .domain([parseInt(wiki.dob) - 50, parseInt(wiki.dob) + 50])
-      .range([0, innerWidth])
-        
-    d3.select('.graph').append('circle').attr
+    year = d3.time.format("%Y").parse
+    tr = (v) -> xscale(year(v))
+    rel = chop(wiki.relations, wiki.dob)
+    rel_dates = rel.map((d) -> d.dob)
+    min = d3.min rel_dates
+    max = d3.max rel_dates
+    diff = Math.abs(max) - Math.abs(min)
+    xscale.domain([min, max].map(year))
+    k = [min, max].map(year)
+    brush(xscale, (b) ->
+      console.log(xscale.domain())
+      xscale.domain(if b.empty() then k  else  b.extent())
+      update(tr))
+    
+    d3.select('.graph')
+    .append('circle').attr
       r: 50
       fill: 'url(#ocean_fill)'
       class: 'main'
       cy: innerHeight / 2
-      cx: xscale(wiki.dob)
+      cx: tr(wiki.dob)
       
     d3.select('.graph').append('circle').attr
       r: 50
       fill: 'url(#globe_highlight)'
       class: 'main'
       cy: innerHeight / 2
-      cx: xscale(wiki.dob)
+      cx: tr(wiki.dob)
       
     d3.select('.graph').append('text').text(wiki.name).attr
       fill: 'red'
-      x: xscale(wiki.dob)
+      x: tr(wiki.dob)
       y: innerHeight / 2
       
-    dates = wiki.relations.map (d) -> parseInt(d.dob)
-    min = d3.min(dates)
-    max = d3.max(dates)
-    start = new Date(min, 0, 1)
-    end = new Date(max, 0, 1)
-    time = d3.time.scale()
-      .range([0, innerWidth])
-      .domain([start, end])
-      
     axis = d3.svg.axis()
-      .scale(time)
+      .scale(xscale)
       .orient('bottom')
       .ticks(10)
 
@@ -60,11 +97,12 @@ define ['utils', 'initialize_svg'], (utils, init) ->
     data = wiki.relations.map (data, index) ->
       text: data.name
       i: index
-      x: xscale(parseInt(data.dob) or 1950)
+      dob: data.dob
+      x: tr(data.dob)
       y: Math.random() * innerHeight
       fill: utils.rand_c()
       r: 15
-
+      
     nodes = d3.select('.graph').selectAll('.node').data(data)
       .enter().append('circle')
       .on('click', (d)-> console.log(d))
@@ -74,7 +112,7 @@ define ['utils', 'initialize_svg'], (utils, init) ->
       .attr
         class: 'relation'
         'fill-opacity': .5
-        cx: (d) -> d.x
+        cx: (d) -> d.x = tr(d.dob)
         cy: (d) -> d.y
         fill: (d) -> d.fill
       .call(drag)
@@ -99,9 +137,6 @@ define ['utils', 'initialize_svg'], (utils, init) ->
           fill: d.fill
           'font-family': 'deja vu sans mono'
 
-    #TODO
-    # convert lines to path
-    # give links access to nodes
     d3.selectAll('.relation').data().forEach (b) ->
       a = d3.select('.main')
       a = {x: a.attr('cx'), y: a.attr('cy')}
