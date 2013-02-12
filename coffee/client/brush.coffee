@@ -3,7 +3,7 @@ define [], () ->
     svg = d3.select('svg')
     b = d3.svg.brush()
       .x(scale)
-      .on('brushend', -> cb(b))
+      .on('brush', -> cb(b))
 
     brush = svg.append('g')
       .attr

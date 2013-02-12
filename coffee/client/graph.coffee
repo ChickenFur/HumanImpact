@@ -1,10 +1,12 @@
 #TODO
-# give nodes access to links
+# increase readability
+# evenly distribute y coordinate
+# links not being deleted
+
 # increase link delay
 # add links of links
-# increase readability
-# bug where domain gets stuck...
-# evenly distribute y coordinate
+
+# give nodes access to links
 define ['utils', 'initialize_svg', 'brush'], (utils, init, brush) ->
   drag = d3.behavior.drag().on 'drag', ->
     dx = d3.event.dx
@@ -25,9 +27,9 @@ define ['utils', 'initialize_svg', 'brush'], (utils, init, brush) ->
       
   update = (scale)->
     nodes = d3.selectAll('.relation')
-      .transition()
-      .duration(1000)
-      .ease(d3.ease('cubic-in-out'))
+      # .transition()
+      # .duration(1000)
+      # .ease(d3.ease('cubic-in-out'))
       .attr
         cx: (d) -> d.x = scale(d.dob)
         
@@ -53,7 +55,6 @@ define ['utils', 'initialize_svg', 'brush'], (utils, init, brush) ->
   links = []
   xscale = d3.time.scale()
     .range([15, innerWidth-25])
-    .clamp(true)
 
   create = (wiki) ->
     init()
@@ -66,10 +67,9 @@ define ['utils', 'initialize_svg', 'brush'], (utils, init, brush) ->
     diff = Math.abs(max) - Math.abs(min)
     k = [min, max].map(year)
     xscale.domain([min, max].map(year))
-    brush(xscale.copy(), (b) ->
+    brush xscale.copy(), (b) ->
       xscale.domain(if b.empty() then k  else  b.extent())
       update(tr)
-    )
     
     d3.select('.graph')
     .append('circle').attr

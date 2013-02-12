@@ -39,7 +39,7 @@ define(['utils', 'initialize_svg', 'brush'], function(utils, init, brush) {
   });
   update = function(scale) {
     var nodes;
-    nodes = d3.selectAll('.relation').transition().duration(1000).ease(d3.ease('cubic-in-out')).attr({
+    nodes = d3.selectAll('.relation').attr({
       cx: function(d) {
         return d.x = scale(d.dob);
       }
@@ -87,7 +87,7 @@ define(['utils', 'initialize_svg', 'brush'], function(utils, init, brush) {
     }
   };
   links = [];
-  xscale = d3.time.scale().range([15, innerWidth - 25]).clamp(true);
+  xscale = d3.time.scale().range([15, innerWidth - 25]);
   create = function(wiki) {
     var axis, data, diff, k, max, min, nodes, rel, rel_dates, tr, year;
     init();
