@@ -48,4 +48,4 @@ define [], () ->
     svg.append('g').attr('class','graph')
     svg.append('g')
       .attr('class', 'time')
-      .attr('transform', "translate(0, #{innerHeight * .96})")
+      .attr('transform', "translate(0, #{innerHeight * .93})")

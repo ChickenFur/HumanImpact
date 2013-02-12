@@ -173,7 +173,16 @@
         }
       });
       d3.selectAll('.relation').each(function(d, i) {
-        return d3.select('.graph').append('text').datum(d).text(d.text).transition().duration(1000).delay(i * 50).ease(d3.ease('cubic-in-out')).attr({
+        return d3.select('.graph').append('text').datum(d).text(d.text).on('mouseover', function() {
+          return d3.select(this).transition().attr({
+            'font-size': '1.5em'
+          });
+        }).on('mouseout', function() {
+          return d3.select(this).transition().attr({
+            'font-size': '.7em'
+          });
+        }).transition().duration(1000).delay(i * 50).ease(d3.ease('cubic-in-out')).attr({
+          'font-size': '.7em',
           "class": 'name',
           x: function(d) {
             return d.x - 5;
