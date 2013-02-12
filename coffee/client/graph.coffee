@@ -54,7 +54,7 @@ define ['utils', 'initialize_svg', 'brush'], (utils, init, brush) ->
   xscale = d3.time.scale()
     .range([15, innerWidth-25])
     .clamp(true)
-    
+
   create = (wiki) ->
     init()
     year = d3.time.format("%Y").parse
@@ -64,12 +64,11 @@ define ['utils', 'initialize_svg', 'brush'], (utils, init, brush) ->
     min = d3.min rel_dates
     max = d3.max rel_dates
     diff = Math.abs(max) - Math.abs(min)
-    xscale.domain([min, max].map(year))
     k = [min, max].map(year)
-    brush(xscale, (b) ->
-      console.log(b.extent())
-      #xscale.domain(if b.empty() then k  else  b.extent())
-      #update(tr)
+    xscale.domain([min, max].map(year))
+    brush(xscale.copy(), (b) ->
+      xscale.domain(if b.empty() then k  else  b.extent())
+      update(tr)
     )
     
     d3.select('.graph')

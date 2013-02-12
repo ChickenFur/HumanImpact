@@ -102,10 +102,11 @@ define(['utils', 'initialize_svg', 'brush'], function(utils, init, brush) {
     min = d3.min(rel_dates);
     max = d3.max(rel_dates);
     diff = Math.abs(max) - Math.abs(min);
-    xscale.domain([min, max].map(year));
     k = [min, max].map(year);
-    brush(xscale, function(b) {
-      return console.log(b.extent());
+    xscale.domain([min, max].map(year));
+    brush(xscale.copy(), function(b) {
+      xscale.domain(b.empty() ? k : b.extent());
+      return update(tr);
     });
     d3.select('.graph').append('circle').attr({
       r: 50,
