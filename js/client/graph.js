@@ -76,7 +76,7 @@ define("graph", ["brush", "utils", "require", "getPerson", "initialize_svg"], fu
       d = relations[_i];
       d.dob = '' + (d.dob.match(/bc/i) ? -1 : +1 * parseInt(d.dob));
     }
-    if (relations.length > 40) {
+    if (relations.length > 100) {
       return relations.filter(function(d) {
         return +d.dob;
       }).sort(function(a, b) {
@@ -84,6 +84,8 @@ define("graph", ["brush", "utils", "require", "getPerson", "initialize_svg"], fu
       }).filter(function(d, i) {
         return i < relations.length * .5 || +d.dob > 1990;
       });
+    } else {
+      return relations;
     }
   };
   xscale = d3.time.scale().range([15, innerWidth - 25]);
