@@ -139,7 +139,7 @@ define "graph", ["brush", "utils","require", "getPerson", "initialize_svg"], (br
           from: a
           to: b
 
-   d3.select('.graph').selectAll('.link').data(links)
+    d3.select('.graph').selectAll('.link').data(links)
       .enter().insert('line', '*')
       .attr
         'stroke-width': 2

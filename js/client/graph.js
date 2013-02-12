@@ -183,7 +183,7 @@
           'font-family': 'deja vu sans mono'
         });
       });
-      return d3.selectAll('.relation').data().forEach(function(b) {
+      d3.selectAll('.relation').data().forEach(function(b) {
         var a;
         a = d3.select('.main');
         a = {
@@ -197,35 +197,35 @@
           });
         }
       });
+      return d3.select('.graph').selectAll('.link').data(links).enter().insert('line', '*').attr({
+        'stroke-width': 2,
+        'stroke-opacity': .01,
+        "class": 'link',
+        x1: function(d) {
+          return d.from.x;
+        },
+        y1: function(d) {
+          return d.from.y;
+        },
+        x2: function(d) {
+          return d.from.x;
+        },
+        y2: function(d) {
+          return d.from.y;
+        },
+        stroke: function(d) {
+          return d.to.fill;
+        }
+      }).transition().duration(5000).ease(d3.ease('cubic')).attr({
+        'stroke-opacity': .3,
+        x2: function(d) {
+          return d.to.x;
+        },
+        y2: function(d) {
+          return d.to.y;
+        }
+      });
     };
-    d3.select('.graph').selectAll('.link').data(links).enter().insert('line', '*').attr({
-      'stroke-width': 2,
-      'stroke-opacity': .01,
-      "class": 'link',
-      x1: function(d) {
-        return d.from.x;
-      },
-      y1: function(d) {
-        return d.from.y;
-      },
-      x2: function(d) {
-        return d.from.x;
-      },
-      y2: function(d) {
-        return d.from.y;
-      },
-      stroke: function(d) {
-        return d.to.fill;
-      }
-    }).transition().duration(5000).ease(d3.ease('cubic')).attr({
-      'stroke-opacity': .3,
-      x2: function(d) {
-        return d.to.x;
-      },
-      y2: function(d) {
-        return d.to.y;
-      }
-    });
     return {
       create: create
     };
