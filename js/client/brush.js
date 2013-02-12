@@ -10,7 +10,7 @@ define(function() {
     });
     return brush = svg.append('g').attr({
       "class": 'brush',
-      transform: "translate(0," + (innerHeight * .94) + ")",
+      transform: "translate(0," + (innerHeight * .91) + ")",
       stroke: 'blue`',
       fill: 'url(#brush)',
       'stroke-width': '1'

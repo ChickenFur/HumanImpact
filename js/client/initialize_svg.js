@@ -33,6 +33,6 @@ define([], function() {
       }
     });
     svg.append('g').attr('class', 'graph');
-    return svg.append('g').attr('class', 'time').attr('transform', "translate(0, " + (innerHeight * .96) + ")");
+    return svg.append('g').attr('class', 'time').attr('transform', "translate(0, " + (innerHeight * .93) + ")");
   };
 });
