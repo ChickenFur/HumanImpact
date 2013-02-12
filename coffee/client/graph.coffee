@@ -39,10 +39,12 @@ define "graph", ["brush", "utils","require", "getPerson", "initialize_svg"],
     dist = (i)-> Math.abs(parseInt(center) - i) + Math.random()
     for d in relations
       d.dob = '' + if d.dob.match(/bc/i) then -1 else +1 * parseInt(d.dob)
-    if relations.length > 40 
+    if relations.length > 100
       relations.filter((d) -> +d.dob)
       .sort((a,b) -> dist(a.dob) - dist(b.dob))
       .filter((d, i) -> i < relations.length * .5 || +d.dob > 1990)
+    else 
+        relations
         
   xscale = d3.time.scale()
     .range([15, innerWidth-25])
