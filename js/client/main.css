@@ -28,7 +28,7 @@ input {
 .header {
   width: 100%;
   background: #F7DFB5;
-  height: 50px;
+  height: 70px;
   margin: 0px auto;
   padding-left: 75px;
   padding-top: 15px;
@@ -56,4 +56,52 @@ p {
   font-family: arial, sans-serif;
   display: inline;
 }
+
+.whoIs {
+  
+  border-radius: 10px;
+  background-color: lightgray;
+  padding: 5px;
+
+}
+.whoIs:hover {
+  cursor: pointer;
+}
+
+.hiddenWhoIs{
+  display: none;
+}
+#whoIsClose{
+  width : 40px;
+  height : 20px;
+  background-color: lightgray;
+  border-radius: 5px;
+  margin-top: -39px;
+  float: right;
+  padding-left: 6px;
+  padding-top: 2px;
+}
+#whoIsClose:hover{
+  cursor: pointer;
+}
+.bioHide{ 
+  display: none;
+
+}
+.bioShow{
+  display: inline;
+  position: absolute;
+  padding-top: 50px;
+  left: 5%;
+  right: 10%;
+  top: 100px;
+  background-color: white;
+  z-index: 100;
+  border: 1px solid gray;
+  border-radius: 10px;
+  padding-left: 10px;
+  padding-right: 10px;
+
+}
+
 

@@ -1,11 +1,13 @@
-define "getPerson", ["findBirth", "require", "graph"], (findBirth, require, graph) ->  
+define "getPerson", ["findBirth", "require", "graph", "personBio"], (findBirth, require, graph, personBio) ->  
   getPerson = (searchName )->
     settings =
         url : "/getPerson/?wikipage=#{searchName}" 
         success : (data)->
+          _hideWhoIsButton()
           $('#graphContainer').html("")
+          _setUpWhoIsButton(searchName)
           if(data.name)    
-            require("graph").create(data)
+            require("graph").create data
           if(data is "Not In DB") 
             _showLoadingButton  searchName 
             _crawlWikipedia data, searchName, ()->
@@ -13,6 +15,17 @@ define "getPerson", ["findBirth", "require", "graph"], (findBirth, require, grap
         error : (err)->
           console.log("Error in Get Person Ajax Request:", err)
       $.ajax settings
+
+  _hideWhoIsButton = () ->
+    $('#whoIsButton').removeClass("whoIs")
+    $('#whoIsButton').addClass('hiddenWhoIs')
+    
+  _setUpWhoIsButton = (searchName) ->
+    personBio.get searchName, () ->
+      personBio.display "#bioDisplay"
+      $('#whoIsButton').addClass("whoIs")
+      $('#whoIsButton').removeClass('hiddenWhoIs')
+      $('#whoIsButton').html("Who is : <p> #{searchName}</p>")
 
   _crawlWikipedia = (data, searchName, callBack) ->
     dob = ""

@@ -9,10 +9,18 @@
           return $('.findBirthDate').click();
         }
       });
-      return $('.findBirthDate').on("click", function(event) {
+      $('.findBirthDate').on("click", function(event) {
         var searchName;
         searchName = $(".nameInput").val();
         return getPerson.getPerson(searchName);
+      });
+      $('#whoIsButton').on("click", function(event) {
+        $('#bioDisplay').addClass("bioShow");
+        return $('#bioDisplay').removeClass("bioHide");
+      });
+      return $('#whoIsClose').on("click", function(event) {
+        $('#bioDisplay').addClass("bioHide");
+        return $('#bioDisplay').removeClass("bioShow");
       });
     });
   });

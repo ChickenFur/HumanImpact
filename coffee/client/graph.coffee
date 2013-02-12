@@ -1,6 +1,4 @@
-
 define "graph", ["utils","require", "getPerson"], (utils, getPerson, require) ->
-
   drag = d3.behavior.drag().on 'drag', ->
     dx = d3.event.dx
     dy = d3.event.dy
