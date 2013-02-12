@@ -1,5 +1,4 @@
-define "graph", ["brush", "utils","require", "getPerson", "initialize_svg"],
-(brush,  utils, getPerson, require, init) ->
+define "graph", ["brush", "utils","require", "getPerson", "initialize_svg"], (brush,  utils, getPerson, require, init) ->
   drag = d3.behavior.drag().on 'drag', ->
     dx = d3.event.dx
     dy = d3.event.dy
@@ -140,11 +139,8 @@ define "graph", ["brush", "utils","require", "getPerson", "initialize_svg"],
           from: a
           to: b
 
-    l = d3.select('.graph').selectAll('.link').data(links)
-
-    l.exit().remove()
-    
-      l.enter().insert('line', '*')
+    d3.select('.graph').selectAll('.link').data(links)
+      .enter().insert('line', '*')
       .attr
         'stroke-width': 2
         'stroke-opacity': .01
