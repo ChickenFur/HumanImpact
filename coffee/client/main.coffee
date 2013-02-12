@@ -10,3 +10,11 @@ require ["findBirth", "graph", "typeAhead", "getPerson"], (findBirth, graph, typ
     $('.findBirthDate').on "click", (event) ->
       searchName = $(".nameInput").val()
       getPerson.getPerson(searchName)
+
+    $('#whoIsButton').on "click", (event) ->
+      $('#bioDisplay').addClass("bioShow")
+      $('#bioDisplay').removeClass("bioHide")
+
+    $('#whoIsClose').on "click", (event) ->
+      $('#bioDisplay').addClass("bioHide")
+      $('#bioDisplay').removeClass("bioShow")

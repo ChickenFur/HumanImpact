@@ -20,7 +20,7 @@
       return $.ajax(settings);
     };
     display = function(desiredTag) {
-      return $(desiredTag).html(bio);
+      return $(desiredTag).append(bio);
     };
     formatBio = function(bio) {
       bio = bio.slice(bio.indexOf("<p>"), bio.indexOf("<strong"));

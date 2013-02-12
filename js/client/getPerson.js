@@ -2,7 +2,7 @@
 (function() {
 
   define("getPerson", ["findBirth", "require", "graph", "personBio"], function(findBirth, require, graph, personBio) {
-    var getPerson, _checkIfLinksArePeople, _crawlWikipedia, _getDOB, _getLinks, _loadNewGraph, _showLoadingButton, _showResult, _storeRelations,
+    var getPerson, _checkIfLinksArePeople, _crawlWikipedia, _getDOB, _getLinks, _loadNewGraph, _setUpWhoIsButton, _showLoadingButton, _showResult, _storeRelations,
       _this = this;
     getPerson = function(searchName) {
       var settings;
@@ -10,9 +10,7 @@
         url: "/getPerson/?wikipage=" + searchName,
         success: function(data) {
           $('#graphContainer').html("");
-          personBio.get(searchName, function() {
-            return personBio.display("#bioDisplay");
-          });
+          _setUpWhoIsButton(searchName);
           if (data.name) {
             require("graph").create(data);
           }
@@ -28,6 +26,14 @@
         }
       };
       return $.ajax(settings);
+    };
+    _setUpWhoIsButton = function(searchName) {
+      return personBio.get(searchName, function() {
+        personBio.display("#bioDisplay");
+        $('#whoIsButton').addClass("whoIs");
+        $('#whoIsButton').removeClass('hiddenWhoIs');
+        return $('#whoIsButton').html("Who is : <p> " + searchName + "</p>");
+      });
     };
     _crawlWikipedia = function(data, searchName, callBack) {
       var dob;

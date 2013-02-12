@@ -28,7 +28,7 @@ input {
 .header {
   width: 100%;
   background: #F7DFB5;
-  height: 50px;
+  height: 70px;
   margin: 0px auto;
   padding-left: 75px;
   padding-top: 15px;
@@ -56,4 +56,43 @@ p {
   font-family: arial, sans-serif;
   display: inline;
 }
+
+.whoIs {
+  width : 200px;
+  border-radius: 10px;
+  background-color: lightgray;
+  padding: 5px;
+
+}
+.whoIs:hover {
+  cursor: pointer;
+}
+
+.hiddenWhoIs{
+  display: none;
+}
+#whoIsClose{
+  width : 40px;
+  height : 40px;
+  background-color: lightgray;
+  border-radius: 5px;
+  float : right;
+}
+#whoIsClose:hover{
+  cursor: pointer;
+}
+.bioHide{ 
+  display: none;
+
+}
+.bioShow{
+  display: inline;
+  position: absolute;
+  padding-top: 10px;
+  left: 5%;
+  right: 10%;
+  top: 100px;
+
+}
+
 
