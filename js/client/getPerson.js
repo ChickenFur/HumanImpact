@@ -17,8 +17,8 @@
           }
           if (data === "Not In DB") {
             _showLoadingButton(searchName);
-            return _crawlWikipedia(data, searchName, function() {
-              return _loadNewGraph(searchName);
+            return _crawlWikipedia(searchName, function(data) {
+              return _loadNewGraph(searchName, data);
             });
           }
         },
@@ -40,7 +40,7 @@
         return $('#whoIsButton').html("Who is : <p> " + searchName + "</p>");
       });
     };
-    _crawlWikipedia = function(data, searchName, callBack) {
+    _crawlWikipedia = function(searchName, callBack) {
       var dob;
       dob = "";
       return _getDOB(searchName, function(birth) {
@@ -48,10 +48,16 @@
         return _getLinks(searchName, function(links) {
           return _checkIfLinksArePeople(links, function(validLinks) {
             return _storeRelations(searchName, validLinks, dob, function(err) {
+              var data;
+              data = {
+                name: searchName,
+                relations: validLinks,
+                dob: dob
+              };
               if (err) {
                 console.log("Error Saving Relations To DB:", err);
               }
-              return callBack();
+              return callBack(data);
             });
           });
         });
@@ -143,13 +149,13 @@
       $('.result').html("");
       return $("#loadingGif").addClass("showLoading");
     };
-    _loadNewGraph = function(newName) {
+    _loadNewGraph = function(newName, data) {
       $("#loadingGif").addClass("hideLoading").removeClass("showLoading");
       $("#checkWiki").attr("disabled", false);
       $(".nameInput").attr("disabled", false);
       $(".nameInput").css("background-color", "white");
       $(".nameInput").val(newName);
-      return $('.findBirthDate').click();
+      return require("graph").create(data);
     };
     return {
       getPerson: getPerson

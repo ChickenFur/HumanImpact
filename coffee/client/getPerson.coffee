@@ -10,8 +10,8 @@ define "getPerson", ["findBirth", "require", "graph", "personBio"], (findBirth, 
             require("graph").create data
           if(data is "Not In DB") 
             _showLoadingButton  searchName 
-            _crawlWikipedia data, searchName, ()->
-              _loadNewGraph(searchName)
+            _crawlWikipedia searchName, (data)->
+              _loadNewGraph(searchName, data)
         error : (err)->
           console.log("Error in Get Person Ajax Request:", err)
       $.ajax settings
@@ -27,16 +27,20 @@ define "getPerson", ["findBirth", "require", "graph", "personBio"], (findBirth, 
       $('#whoIsButton').removeClass('hiddenWhoIs')
       $('#whoIsButton').html("Who is : <p> #{searchName}</p>")
 
-  _crawlWikipedia = (data, searchName, callBack) ->
+  _crawlWikipedia = (searchName, callBack) ->
     dob = ""
     _getDOB searchName, (birth) ->
       dob = birth
       _getLinks searchName, (links) ->
         _checkIfLinksArePeople links, (validLinks) ->               
-          _storeRelations searchName, validLinks, dob, (err) ->                    
+          _storeRelations searchName, validLinks, dob, (err) ->   
+            data = 
+                name : searchName
+                relations : validLinks
+                dob : dob 
             if err
               console.log "Error Saving Relations To DB:", err  
-            callBack() 
+            callBack(data) 
   _storeRelations = (searchName, validLinks, dob, callBack) ->
       settings = 
         url : "/savePerson/?name=#{searchName}&dob=#{dob}"
@@ -45,7 +49,7 @@ define "getPerson", ["findBirth", "require", "graph", "personBio"], (findBirth, 
         success : ()->
           console.log("Relations Stored")
           callBack()
-        error : (err) ->
+        error : (err) ->   
           callBack(err)
       $.ajax settings
   _checkIfLinksArePeople = (links, callBack) =>
@@ -97,12 +101,13 @@ define "getPerson", ["findBirth", "require", "graph", "personBio"], (findBirth, 
     $('.result').html("")
     $("#loadingGif").addClass("showLoading")
 
-  _loadNewGraph = (newName) ->
+  _loadNewGraph = (newName, data) ->
     $("#loadingGif").addClass("hideLoading").removeClass("showLoading")
     $("#checkWiki").attr("disabled",false)
     $(".nameInput").attr("disabled",false)
     $(".nameInput").css("background-color", "white")
     $(".nameInput").val newName
-    $('.findBirthDate').click()
+    #$('.findBirthDate').click()
+    require("graph").create data
 
   return {getPerson: getPerson}
