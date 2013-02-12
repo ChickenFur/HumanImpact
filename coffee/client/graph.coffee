@@ -1,13 +1,5 @@
-define "graph", ["utils","require", "getPerson"], (utils, getPerson, require) ->
-#TODO
-# increase readability
-# evenly distribute y coordinate
-# links not being deleted
-
-# increase link delay
-# add links of links
-
-# give nodes access to links
+define "graph", ["brush", "utils","require", "getPerson", "initialize_svg"],
+(brush,  utils, getPerson, require, init) ->
   drag = d3.behavior.drag().on 'drag', ->
     dx = d3.event.dx
     dy = d3.event.dy
@@ -52,11 +44,11 @@ define "graph", ["utils","require", "getPerson"], (utils, getPerson, require) ->
       .sort((a,b) -> dist(a.dob) - dist(b.dob))
       .filter((d, i) -> i < relations.length * .5 || +d.dob > 1990)
         
-  links = []
   xscale = d3.time.scale()
     .range([15, innerWidth-25])
 
   create = (wiki) ->
+    links = []
     init()
     year = d3.time.format("%Y").parse
     tr = (v) -> xscale(year(v))
@@ -148,8 +140,11 @@ define "graph", ["utils","require", "getPerson"], (utils, getPerson, require) ->
           from: a
           to: b
 
-    d3.select('.graph').selectAll('.link').data(links)
-      .enter().insert('line', '*')
+    l = d3.select('.graph').selectAll('.link').data(links)
+
+    l.exit().remove()
+    
+      l.enter().insert('line', '*')
       .attr
         'stroke-width': 2
         'stroke-opacity': .01
@@ -166,40 +161,6 @@ define "graph", ["utils","require", "getPerson"], (utils, getPerson, require) ->
         'stroke-opacity': .3
         x2: (d) -> d.to.x
         y2: (d) -> d.to.y
-
-  init = ->
-    body = d3.select('#graphContainer')
-    svg = body.append('svg')
-    grad = svg.append('defs').append('linearGradient')
-      .attr
-        id:'g952'
-        gradientUnits: 'userSpaceonUse'
-        x1:'0%'
-        y1:'0%'
-        y2:'100%'
-        x2:'0%'
-        r: '200%'
-      .selectAll('stop').data(['#a7c8d6', '#7089b3'])
-      .enter().append('stop').attr
-        'stop-color': (d) -> d
-        offset: (d, i) -> i
-    graph = svg.append('g').attr('class','graph')
-    brush = svg.append('g').attr('class','brush')
-      .attr
-        transform: "translate(0,#{innerHeight * .95})"
-        stroke: 'blue`'
-        fill: 'url(#g952)'
-        'stroke-width': '1'
-      .call(d3.svg.brush().x(d3.scale.identity().domain([0, innerWidth])))
-      .on('brushstart', -> console.log 'strart')
-      .on('brush', -> console.log 'brush')
-      .on('brushend', -> console.log 'end')
-      .selectAll('rect')
-      .attr
-        opacity: 1
-        stroke: '#a5b8da'
-        rx: '1.5%'
-        height: '5%'
 
   return {
     create: create
