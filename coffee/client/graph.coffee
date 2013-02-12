@@ -1,12 +1,4 @@
-define "graph", ["utils","require", "getPerson"], (utils, getPerson, require) ->
-#TODO
-# give nodes access to links
-# increase link delay
-# add links of links
-# increase readability
-# bug where domain gets stuck...
-# evenly distribute y coordinate
-
+define "graph", ["brush", "utils","require", "getPerson", "initialize_svg"], (brush,  utils, getPerson, require, init) ->
   drag = d3.behavior.drag().on 'drag', ->
     dx = d3.event.dx
     dy = d3.event.dy
@@ -26,9 +18,9 @@ define "graph", ["utils","require", "getPerson"], (utils, getPerson, require) ->
       
   update = (scale)->
     nodes = d3.selectAll('.relation')
-      .transition()
-      .duration(1000)
-      .ease(d3.ease('cubic-in-out'))
+      # .transition()
+      # .duration(1000)
+      # .ease(d3.ease('cubic-in-out'))
       .attr
         cx: (d) -> d.x = scale(d.dob)
         
@@ -51,12 +43,11 @@ define "graph", ["utils","require", "getPerson"], (utils, getPerson, require) ->
       .sort((a,b) -> dist(a.dob) - dist(b.dob))
       .filter((d, i) -> i < relations.length * .5 || +d.dob > 1990)
         
-  links = []
   xscale = d3.time.scale()
     .range([15, innerWidth-25])
-    .clamp(true)
-    
+
   create = (wiki) ->
+    links = []
     init()
     year = d3.time.format("%Y").parse
     tr = (v) -> xscale(year(v))
@@ -65,13 +56,11 @@ define "graph", ["utils","require", "getPerson"], (utils, getPerson, require) ->
     min = d3.min rel_dates
     max = d3.max rel_dates
     diff = Math.abs(max) - Math.abs(min)
-    xscale.domain([min, max].map(year))
     k = [min, max].map(year)
-    brush(xscale, (b) ->
-      console.log(b.extent())
-      #xscale.domain(if b.empty() then k  else  b.extent())
-      #update(tr)
-    )
+    xscale.domain([min, max].map(year))
+    brush xscale.copy(), (b) ->
+      xscale.domain(if b.empty() then k  else  b.extent())
+      update(tr)
     
     d3.select('.graph')
     .append('circle').attr
@@ -150,7 +139,7 @@ define "graph", ["utils","require", "getPerson"], (utils, getPerson, require) ->
           from: a
           to: b
 
-    d3.select('.graph').selectAll('.link').data(links)
+   d3.select('.graph').selectAll('.link').data(links)
       .enter().insert('line', '*')
       .attr
         'stroke-width': 2
@@ -168,40 +157,6 @@ define "graph", ["utils","require", "getPerson"], (utils, getPerson, require) ->
         'stroke-opacity': .3
         x2: (d) -> d.to.x
         y2: (d) -> d.to.y
-
-  init = ->
-    body = d3.select('#graphContainer')
-    svg = body.append('svg')
-    grad = svg.append('defs').append('linearGradient')
-      .attr
-        id:'g952'
-        gradientUnits: 'userSpaceonUse'
-        x1:'0%'
-        y1:'0%'
-        y2:'100%'
-        x2:'0%'
-        r: '200%'
-      .selectAll('stop').data(['#a7c8d6', '#7089b3'])
-      .enter().append('stop').attr
-        'stop-color': (d) -> d
-        offset: (d, i) -> i
-    graph = svg.append('g').attr('class','graph')
-    brush = svg.append('g').attr('class','brush')
-      .attr
-        transform: "translate(0,#{innerHeight * .95})"
-        stroke: 'blue`'
-        fill: 'url(#g952)'
-        'stroke-width': '1'
-      .call(d3.svg.brush().x(d3.scale.identity().domain([0, innerWidth])))
-      .on('brushstart', -> console.log 'strart')
-      .on('brush', -> console.log 'brush')
-      .on('brushend', -> console.log 'end')
-      .selectAll('rect')
-      .attr
-        opacity: 1
-        stroke: '#a5b8da'
-        rx: '1.5%'
-        height: '5%'
 
   return {
     create: create

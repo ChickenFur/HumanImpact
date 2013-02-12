@@ -1,12 +1,11 @@
-define [], () ->
-  (scale, cb) ->
+define () ->
+  exp = (scale, cb) ->
     svg = d3.select('svg')
     b = d3.svg.brush()
       .x(scale)
-      .on('brushend', -> cb(b))
-
-    brush = svg.append('g')
-      .attr
+      .on('brush', -> cb(b))
+      brush = svg.append('g')
+    .attr
         class: 'brush'
         transform: "translate(0,#{innerHeight * .94})"
         stroke: 'blue`'
@@ -21,3 +20,4 @@ define [], () ->
         height: '5%'
         # width: innerWidth - 40
         # x: 15
+
