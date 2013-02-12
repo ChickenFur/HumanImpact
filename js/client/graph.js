@@ -76,16 +76,18 @@ define(['utils', 'initialize_svg', 'brush'], function(utils, init, brush) {
       d = relations[_i];
       d.dob = '' + (d.dob.match(/bc/i) ? -1 : +1 * parseInt(d.dob));
     }
-    return relations.length > 100 && relations.filter(function(d) {
-      return +d.dob;
-    }).sort(function(a, b) {
-      return dist(a.dob) - dist(b.dob);
-    }).filter(function(d, i) {
-      return i < relations.length * .7 || 1990 < +d.dob;
-    }) || relations;
+    if (relations.length > 40) {
+      return relations.filter(function(d) {
+        return +d.dob;
+      }).sort(function(a, b) {
+        return dist(a.dob) - dist(b.dob);
+      }).filter(function(d, i) {
+        return i < relations.length * .5 || +d.dob > 1990;
+      });
+    }
   };
   links = [];
-  xscale = d3.time.scale().range([15, innerWidth - 25]);
+  xscale = d3.time.scale().range([15, innerWidth - 25]).clamp(true);
   create = function(wiki) {
     var axis, data, diff, k, max, min, nodes, rel, rel_dates, tr, year;
     init();
@@ -103,9 +105,7 @@ define(['utils', 'initialize_svg', 'brush'], function(utils, init, brush) {
     xscale.domain([min, max].map(year));
     k = [min, max].map(year);
     brush(xscale, function(b) {
-      console.log(xscale.domain());
-      xscale.domain(b.empty() ? k : b.extent());
-      return update(tr);
+      return console.log(b.extent());
     });
     d3.select('.graph').append('circle').attr({
       r: 50,
@@ -128,7 +128,7 @@ define(['utils', 'initialize_svg', 'brush'], function(utils, init, brush) {
     });
     axis = d3.svg.axis().scale(xscale).orient('bottom').ticks(10);
     d3.select('.time').call(axis);
-    data = wiki.relations.map(function(data, index) {
+    data = rel.map(function(data, index) {
       return {
         text: data.name,
         i: index,

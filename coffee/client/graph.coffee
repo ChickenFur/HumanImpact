@@ -4,6 +4,7 @@
 # add links of links
 # increase readability
 # bug where domain gets stuck...
+# evenly distribute y coordinate
 define ['utils', 'initialize_svg', 'brush'], (utils, init, brush) ->
   drag = d3.behavior.drag().on 'drag', ->
     dx = d3.event.dx
@@ -44,14 +45,16 @@ define ['utils', 'initialize_svg', 'brush'], (utils, init, brush) ->
     dist = (i)-> Math.abs(parseInt(center) - i) + Math.random()
     for d in relations
       d.dob = '' + if d.dob.match(/bc/i) then -1 else +1 * parseInt(d.dob)
-    relations.length > 100 &&
+    if relations.length > 40 
       relations.filter((d) -> +d.dob)
       .sort((a,b) -> dist(a.dob) - dist(b.dob))
-      .filter((d, i) -> i < relations.length * .7 || 1990 < +d.dob) || relations
+      .filter((d, i) -> i < relations.length * .5 || +d.dob > 1990)
         
   links = []
   xscale = d3.time.scale()
     .range([15, innerWidth-25])
+    .clamp(true)
+    
   create = (wiki) ->
     init()
     year = d3.time.format("%Y").parse
@@ -64,9 +67,10 @@ define ['utils', 'initialize_svg', 'brush'], (utils, init, brush) ->
     xscale.domain([min, max].map(year))
     k = [min, max].map(year)
     brush(xscale, (b) ->
-      console.log(xscale.domain())
-      xscale.domain(if b.empty() then k  else  b.extent())
-      update(tr))
+      console.log(b.extent())
+      #xscale.domain(if b.empty() then k  else  b.extent())
+      #update(tr)
+    )
     
     d3.select('.graph')
     .append('circle').attr
@@ -94,7 +98,7 @@ define ['utils', 'initialize_svg', 'brush'], (utils, init, brush) ->
       .ticks(10)
 
     d3.select('.time').call(axis)
-    data = wiki.relations.map (data, index) ->
+    data = rel.map (data, index) ->
       text: data.name
       i: index
       dob: data.dob
