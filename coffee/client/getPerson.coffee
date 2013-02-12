@@ -1,11 +1,13 @@
-define "getPerson", ["findBirth", "require", "graph"], (findBirth, require, graph) ->  
+define "getPerson", ["findBirth", "require", "graph", "personBio"], (findBirth, require, graph, personBio) ->  
   getPerson = (searchName )->
     settings =
         url : "/getPerson/?wikipage=#{searchName}" 
         success : (data)->
           $('#graphContainer').html("")
+          personBio.get searchName, () ->
+            personBio.display "#bioDisplay"
           if(data.name)    
-            require("graph").create(data)
+            require("graph").create data
           if(data is "Not In DB") 
             _showLoadingButton  searchName 
             _crawlWikipedia data, searchName, ()->
