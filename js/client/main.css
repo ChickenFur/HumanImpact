@@ -58,7 +58,7 @@ p {
 }
 
 .whoIs {
-  width : 200px;
+  
   border-radius: 10px;
   background-color: lightgray;
   padding: 5px;
@@ -73,10 +73,13 @@ p {
 }
 #whoIsClose{
   width : 40px;
-  height : 40px;
+  height : 20px;
   background-color: lightgray;
   border-radius: 5px;
-  float : right;
+  margin-top: -39px;
+  float: right;
+  padding-left: 6px;
+  padding-top: 2px;
 }
 #whoIsClose:hover{
   cursor: pointer;
@@ -88,10 +91,16 @@ p {
 .bioShow{
   display: inline;
   position: absolute;
-  padding-top: 10px;
+  padding-top: 50px;
   left: 5%;
   right: 10%;
   top: 100px;
+  background-color: white;
+  z-index: 100;
+  border: 1px solid gray;
+  border-radius: 10px;
+  padding-left: 10px;
+  padding-right: 10px;
 
 }
 

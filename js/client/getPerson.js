@@ -2,13 +2,14 @@
 (function() {
 
   define("getPerson", ["findBirth", "require", "graph", "personBio"], function(findBirth, require, graph, personBio) {
-    var getPerson, _checkIfLinksArePeople, _crawlWikipedia, _getDOB, _getLinks, _loadNewGraph, _setUpWhoIsButton, _showLoadingButton, _showResult, _storeRelations,
+    var getPerson, _checkIfLinksArePeople, _crawlWikipedia, _getDOB, _getLinks, _hideWhoIsButton, _loadNewGraph, _setUpWhoIsButton, _showLoadingButton, _showResult, _storeRelations,
       _this = this;
     getPerson = function(searchName) {
       var settings;
       settings = {
         url: "/getPerson/?wikipage=" + searchName,
         success: function(data) {
+          _hideWhoIsButton();
           $('#graphContainer').html("");
           _setUpWhoIsButton(searchName);
           if (data.name) {
@@ -26,6 +27,10 @@
         }
       };
       return $.ajax(settings);
+    };
+    _hideWhoIsButton = function() {
+      $('#whoIsButton').removeClass("whoIs");
+      return $('#whoIsButton').addClass('hiddenWhoIs');
     };
     _setUpWhoIsButton = function(searchName) {
       return personBio.get(searchName, function() {

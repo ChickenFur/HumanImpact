@@ -20,7 +20,8 @@
       return $.ajax(settings);
     };
     display = function(desiredTag) {
-      return $(desiredTag).append(bio);
+      $("#bioText").remove();
+      return $(desiredTag).append("<div id='bioText'> " + bio + " </div>");
     };
     formatBio = function(bio) {
       bio = bio.slice(bio.indexOf("<p>"), bio.indexOf("<strong"));

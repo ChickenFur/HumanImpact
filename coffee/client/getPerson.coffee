@@ -3,6 +3,7 @@ define "getPerson", ["findBirth", "require", "graph", "personBio"], (findBirth, 
     settings =
         url : "/getPerson/?wikipage=#{searchName}" 
         success : (data)->
+          _hideWhoIsButton()
           $('#graphContainer').html("")
           _setUpWhoIsButton(searchName)
           if(data.name)    
@@ -15,6 +16,10 @@ define "getPerson", ["findBirth", "require", "graph", "personBio"], (findBirth, 
           console.log("Error in Get Person Ajax Request:", err)
       $.ajax settings
 
+  _hideWhoIsButton = () ->
+    $('#whoIsButton').removeClass("whoIs")
+    $('#whoIsButton').addClass('hiddenWhoIs')
+    
   _setUpWhoIsButton = (searchName) ->
     personBio.get searchName, () ->
       personBio.display "#bioDisplay"

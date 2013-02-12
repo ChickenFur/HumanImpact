@@ -12,13 +12,14 @@ define "personBio", () ->
     $.ajax settings
 
   display = (desiredTag) ->
-    $(desiredTag).html(bio)
+    $("#bioText").remove()
+    $(desiredTag).append("<div id='bioText'> #{bio} </div>")
 
   formatBio = (bio)->
     bio = bio.slice( bio.indexOf("<p>"), bio.indexOf("<strong") )
     while ( bio.indexOf( "href=\"/wiki") isnt -1 ) 
       bio = bio.replace("href=\"/wiki", "href=\"http://en.wikipedia.org/wiki")
     bio
-    
+
   {get : get, display : display, bio : bio}
 
