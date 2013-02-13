@@ -8,6 +8,11 @@ define "findBirth", () ->
         unless birthLoc is -1
           if n.title.indexOf("Year of") is -1            
             birth = n.title.slice(9, birthLoc-1)
+            if birth.indexOf(" BC") isnt -1
+              birth = birth.slice(0, birth.indexOf(" BC"))
+              birth = "-" + birth
+            if birth.indexOf("s") isnt -1
+              birth = birth.slice(0, birth.indexOf("s"))
           else
             birth = "unknown"
       if birth is ""

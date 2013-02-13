@@ -57,12 +57,15 @@ define "graph", ["brush", "utils","require", "getPerson", "initialize_svg"], (br
   create = (wiki) ->
     links = []
     init()
-    year = d3.time.format("%Y").parse
+    year = (year) -> new Date(year,1,1)
     tr = (v) -> xscale(year(v))
     rel = chop(wiki.relations, wiki.dob)
     rel_dates = rel.map((d) -> d.dob)
-    min = d3.min rel_dates
-    max = d3.max rel_dates
+    dateNumbers = rel_dates.map(parseFloat)
+    min = d3.min dateNumbers
+    min = min.toString()
+    max = d3.max dateNumbers
+    max = max.toString()
     diff = Math.abs(max) - Math.abs(min)
     k = [min, max].map(year)
     xscale.domain([min, max].map(year))
